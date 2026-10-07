@@ -284,7 +284,7 @@
 
     // --- SESSION CONTROL ---
     function checkSession() {
-      const isLoggedIn = localStorage.getItem('logged_in') === 'true';
+      const isLoggedIn = true;
       if (isLoggedIn) {
         document.getElementById('login-card').classList.add('hidden');
         document.getElementById('dashboard').classList.remove('hidden');

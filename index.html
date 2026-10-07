@@ -128,7 +128,7 @@
                 <div id="tab-dashboard" class="tab-content">
                     
                     <!-- KPI Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                             <div>
                                 <p class="text-xs text-slate-500 font-medium">Total Registered</p>
@@ -140,11 +140,20 @@
 
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                             <div>
-                                <p class="text-xs text-slate-500 font-medium">Encounters Today</p>
+                                <p class="text-xs text-slate-500 font-medium">Encounters / Visits</p>
                                 <h3 class="text-2xl font-bold text-slate-800 mt-1" id="kpi-encounters-count">0</h3>
                                 <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-hospital-user text-blue-500"></i> Active visits</p>
                             </div>
                             <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-notes-medical text-lg"></i></div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-500 font-medium">Available Stocks</p>
+                                <h3 class="text-2xl font-bold text-slate-800 mt-1" id="kpi-stocks-count">0</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-boxes-stacked text-purple-500"></i> Total Items</p>
+                            </div>
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i class="fa-solid fa-pills text-lg"></i></div>
                         </div>
 
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
@@ -162,7 +171,7 @@
                                 <h3 class="text-2xl font-bold text-slate-800 mt-1" id="kpi-revenue-display">KSh 0.00</h3>
                                 <p class="text-[11px] text-slate-400 mt-0.5">Pharmacy & Services</p>
                             </div>
-                            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i class="fa-solid fa-wallet text-lg"></i></div>
+                            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-wallet text-lg"></i></div>
                         </div>
                     </div>
 
@@ -199,12 +208,14 @@
                                                 <th class="p-2">Enc ID</th>
                                                 <th class="p-2">Patient</th>
                                                 <th class="p-2">Vitals / Status</th>
+                                                <th class="p-2">Lab Results</th>
                                                 <th class="p-2">Diagnosis</th>
                                                 <th class="p-2">Cost (KSh)</th>
+                                                <th class="p-2">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="dashboard-encounters-list">
-                                            <tr><td colspan="5" class="p-4 text-center text-slate-400">No active encounters recorded</td></tr>
+                                            <tr><td colspan="7" class="p-4 text-center text-slate-400">No active encounters recorded</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -225,7 +236,7 @@
                                 </div>
                                 <div class="p-2 bg-slate-50 rounded border border-slate-200">
                                     <p class="font-bold text-slate-700"><span class="w-2 h-2 inline-block rounded-full bg-amber-500 mr-1"></span> Nurse / Clinician</p>
-                                    <p class="text-slate-500 text-[11px] mt-0.5">Record vitals, diagnosis, prescribe medicines, and submit lab requests.</p>
+                                    <p class="text-slate-500 text-[11px] mt-0.5">Record vitals, diagnosis, prescribe medicines, submit lab requests, and review lab results.</p>
                                 </div>
                                 <div class="p-2 bg-slate-50 rounded border border-slate-200">
                                     <p class="font-bold text-slate-700"><span class="w-2 h-2 inline-block rounded-full bg-purple-500 mr-1"></span> Lab Technician</p>
@@ -268,8 +279,15 @@
                         </div>
 
                         <!-- Directory -->
-                        <div class="md:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 mb-3">Registered Patient Directory</h3>
+                        <div class="md:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+                                <h3 class="font-bold text-sm text-slate-800">Registered Patient Directory</h3>
+                                <!-- Phone Search -->
+                                <div class="relative w-full sm:w-64">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                                    <input type="text" id="search-phone-reg" oninput="filterPatientsByPhone()" placeholder="Search by Phone No..." class="w-full pl-8 pr-3 py-1.5 border border-slate-300 text-xs rounded outline-none focus:border-blue-500">
+                                </div>
+                            </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-xs border-collapse">
                                     <thead>
@@ -277,12 +295,13 @@
                                             <th class="p-2">Patient No.</th>
                                             <th class="p-2">Full Name</th>
                                             <th class="p-2">Phone</th>
-                                            <th class="p-2">Visits</th>
+                                            <th class="p-2">Total Visits</th>
                                             <th class="p-2">Registered At</th>
+                                            <th class="p-2">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="patient-directory-list">
-                                        <tr><td colspan="5" class="p-4 text-center text-slate-400">No patients registered yet.</td></tr>
+                                        <tr><td colspan="6" class="p-4 text-center text-slate-400">No patients registered yet.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -328,22 +347,30 @@
                             </form>
                         </div>
 
-                        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 mb-3">Encounters & Medical History</h3>
+                        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+                                <h3 class="font-bold text-sm text-slate-800">Encounters & Medical History</h3>
+                                <!-- Search by Phone Number -->
+                                <div class="relative w-full sm:w-64">
+                                    <i class="fa-solid fa-phone absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                                    <input type="text" id="search-phone-enc" oninput="filterEncountersByPhone()" placeholder="Search visits by Phone..." class="w-full pl-8 pr-3 py-1.5 border border-slate-300 text-xs rounded outline-none focus:border-blue-500">
+                                </div>
+                            </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-xs border-collapse">
                                     <thead>
                                         <tr class="bg-slate-50 border-y border-slate-200 text-slate-500">
                                             <th class="p-2">Enc ID</th>
-                                            <th class="p-2">Patient</th>
+                                            <th class="p-2">Patient / Phone</th>
                                             <th class="p-2">Vitals</th>
-                                            <th class="p-2">Lab Status</th>
+                                            <th class="p-2">Lab Status / Results</th>
                                             <th class="p-2">Diagnosis</th>
                                             <th class="p-2">Total (KSh)</th>
+                                            <th class="p-2">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="encounters-table-body">
-                                        <tr><td colspan="6" class="p-4 text-center text-slate-400">No consultation records.</td></tr>
+                                        <tr><td colspan="7" class="p-4 text-center text-slate-400">No consultation records.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -364,7 +391,7 @@
                                 <thead>
                                     <tr class="bg-slate-50 border-y border-slate-200 text-slate-500">
                                         <th class="p-2">Enc ID</th>
-                                        <th class="p-2">Patient</th>
+                                        <th class="p-2">Patient / Phone</th>
                                         <th class="p-2">Requested Test</th>
                                         <th class="p-2">Status</th>
                                         <th class="p-2">Lab Result Record</th>
@@ -407,7 +434,10 @@
                         </div>
 
                         <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 mb-3">Pharmacy Inventory Stock</h3>
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+                                <h3 class="font-bold text-sm text-slate-800">Pharmacy Inventory Stock</h3>
+                                <span class="text-xs bg-slate-100 px-2.5 py-1 rounded font-semibold text-slate-600">Total Available Stock Units: <strong id="inv-total-units" class="text-slate-900">0</strong></span>
+                            </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-xs border-collapse">
                                     <thead>
@@ -465,6 +495,29 @@
 
             </div>
         </main>
+    </div>
+
+    <!-- MEDICAL HISTORY MODAL (ACCESSIBLE BY ADMIN, NURSE, LAB TECH) -->
+    <div id="medical-history-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-2xl w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-slate-800" id="history-patient-name">Patient Medical History</h3>
+                    <p class="text-xs text-slate-500" id="history-patient-details">Patient ID & Phone</p>
+                </div>
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="max-h-96 overflow-y-auto space-y-3" id="history-modal-body">
+                <!-- Dynamically populated encounter history cards -->
+            </div>
+
+            <div class="text-right border-t border-slate-100 pt-3">
+                <button onclick="closeHistoryModal()" class="px-4 py-2 bg-slate-800 text-white text-xs rounded hover:bg-slate-900">Close</button>
+            </div>
+        </div>
     </div>
 
     <!-- JAVASCRIPT ENGINE -->
@@ -542,7 +595,9 @@
             const target = document.getElementById(`tab-${tabId}`);
             if (target) target.classList.remove('hidden');
 
-            event.currentTarget.classList.add('active');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
 
             const titles = {
                 dashboard: 'Clinic Dashboard',
@@ -573,7 +628,7 @@
                 phone,
                 age,
                 gender,
-                visits: 1,
+                visits: 0,
                 date: new Date().toLocaleDateString()
             };
 
@@ -589,6 +644,9 @@
             const patient = state.patients.find(p => p.id === patientId);
             if (!patient) return;
 
+            // LINK: Increment visit count for patient
+            patient.visits = (patient.visits || 0) + 1;
+
             const vitals = document.getElementById('enc-vitals').value;
             const consultFee = parseFloat(document.getElementById('enc-fee').value) || 0;
             const diagnosis = document.getElementById('enc-diagnosis').value;
@@ -599,13 +657,15 @@
                 id: `ENC-${2000 + state.encounters.length + 1}`,
                 patientName: patient.name,
                 patientId: patient.id,
+                patientPhone: patient.phone,
                 vitals: vitals || 'N/A',
                 consultFee,
                 diagnosis: diagnosis || 'General checkup',
                 labRequest: labRequest || null,
                 labStatus: labRequest ? 'Pending' : 'N/A',
                 labResult: '',
-                rxCost
+                rxCost,
+                date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
             state.encounters.push(newEncounter);
@@ -613,7 +673,7 @@
             renderAll();
         }
 
-        // LAB RESULT SUBMISSION LOGIC
+        // LAB RESULT SUBMISSION LOGIC (LINK: Linked to Nurse and Admin Views)
         function submitLabResult(encId) {
             const input = document.getElementById(`lab-input-${encId}`);
             const encounter = state.encounters.find(e => e.id === encId);
@@ -649,6 +709,55 @@
             renderAll();
         }
 
+        // SEARCH PATIENTS BY PHONE LOGIC
+        function filterPatientsByPhone() {
+            const query = document.getElementById('search-phone-reg').value.toLowerCase().trim();
+            renderPatientsTable(query);
+        }
+
+        // SEARCH ENCOUNTERS/VISITS BY PHONE LOGIC
+        function filterEncountersByPhone() {
+            const query = document.getElementById('search-phone-enc').value.toLowerCase().trim();
+            renderEncountersTable(query);
+        }
+
+        // MEDICAL HISTORY MODAL DISPLAY (Accessible by Admin, Nurse, Lab Tech)
+        function openMedicalHistory(patientId) {
+            const patient = state.patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            document.getElementById('history-patient-name').innerText = `Medical History: ${patient.name}`;
+            document.getElementById('history-patient-details').innerText = `ID: ${patient.id} | Phone: ${patient.phone} | Age: ${patient.age} | Total Visits: ${patient.visits}`;
+
+            const patientVisits = state.encounters.filter(e => e.patientId === patientId);
+            const historyContainer = document.getElementById('history-modal-body');
+
+            if (patientVisits.length === 0) {
+                historyContainer.innerHTML = `<div class="p-4 text-center text-slate-400 text-xs">No medical visit records found for this patient.</div>`;
+            } else {
+                historyContainer.innerHTML = patientVisits.map(v => `
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+                        <div class="flex justify-between font-semibold text-slate-700">
+                            <span><i class="fa-solid fa-notes-medical text-blue-500 mr-1"></i> ${v.id}</span>
+                            <span class="text-slate-400">${v.date}</span>
+                        </div>
+                        <p class="text-slate-600"><strong>Vitals:</strong> ${v.vitals}</p>
+                        <p class="text-slate-600"><strong>Diagnosis:</strong> ${v.diagnosis}</p>
+                        ${v.labRequest ? `
+                            <p class="text-amber-700"><strong>Lab Request:</strong> ${v.labRequest}</p>
+                            <p class="text-emerald-700"><strong>Lab Results:</strong> ${v.labResult || 'Pending Laboratory Processing...'}</p>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('medical-history-modal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('medical-history-modal').classList.add('hidden');
+        }
+
         // FINANCIAL CALCULATIONS ENGINE
         function calculateFinancials() {
             const grossRevenue = state.encounters.reduce((sum, enc) => sum + enc.consultFee + enc.rxCost, 0);
@@ -660,12 +769,18 @@
 
         // RENDER FUNCTIONS
         function renderAll() {
+            // Calculate Stock Count (LINK: Number of available stocks)
+            const totalStockUnits = state.inventory.reduce((sum, item) => sum + item.qty, 0);
+
             // KPIs
             const fin = calculateFinancials();
             document.getElementById('kpi-patients-count').innerText = state.patients.length;
             document.getElementById('kpi-encounters-count').innerText = state.encounters.length;
+            document.getElementById('kpi-stocks-count').innerText = totalStockUnits;
             document.getElementById('kpi-lab-count').innerText = state.encounters.filter(e => e.labStatus === 'Pending').length;
             document.getElementById('kpi-revenue-display').innerText = formatKSh(fin.netProfit);
+
+            document.getElementById('inv-total-units').innerText = totalStockUnits;
 
             // Financial Tab Summary
             document.getElementById('total-revenue-display').innerText = formatKSh(fin.grossRevenue);
@@ -677,52 +792,78 @@
             // Patient Select Options
             const select = document.getElementById('enc-patient-select');
             select.innerHTML = '<option value="">-- Choose Patient --</option>' + 
-                state.patients.map(p => `<option value="${p.id}">${p.name} (${p.id})</option>`).join('');
+                state.patients.map(p => `<option value="${p.id}">${p.name} (${p.phone})</option>`).join('');
 
-            // Patient Directory
+            renderPatientsTable();
+            renderEncountersTable();
+            renderLabQueue();
+            renderInventoryTable();
+            renderChart();
+        }
+
+        // RENDER PATIENTS TABLE WITH PHONE SEARCH FILTER
+        function renderPatientsTable(query = '') {
             const patientTable = document.getElementById('patient-directory-list');
-            if (state.patients.length === 0) {
-                patientTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No patients registered yet.</td></tr>`;
+            const filtered = state.patients.filter(p => p.phone.toLowerCase().includes(query) || p.name.toLowerCase().includes(query) || p.id.toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                patientTable.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No matching patient records found.</td></tr>`;
             } else {
-                patientTable.innerHTML = state.patients.map(p => `
+                patientTable.innerHTML = filtered.map(p => `
                     <tr class="border-b border-slate-100 hover:bg-slate-50">
                         <td class="p-2 font-mono text-blue-600">${p.id}</td>
                         <td class="p-2 font-semibold text-slate-700">${p.name}</td>
-                        <td class="p-2">${p.phone}</td>
-                        <td class="p-2">${p.visits}</td>
+                        <td class="p-2 font-mono text-slate-600">${p.phone}</td>
+                        <td class="p-2 font-semibold text-blue-700"><span class="bg-blue-50 px-2 py-0.5 rounded border border-blue-200">${p.visits} visits</span></td>
                         <td class="p-2 text-slate-400">${p.date}</td>
+                        <td class="p-2">
+                            <button onclick="openMedicalHistory('${p.id}')" class="text-xs text-blue-600 hover:underline font-medium"><i class="fa-solid fa-clock-rotate-left mr-1"></i> History</button>
+                        </td>
                     </tr>
                 `).join('');
             }
+        }
 
-            // Encounters Table (Dashboard & Consultation View)
+        // RENDER ENCOUNTERS TABLE WITH PHONE SEARCH FILTER & LAB LINKING
+        function renderEncountersTable(query = '') {
             const encTable = document.getElementById('encounters-table-body');
             const dashEncTable = document.getElementById('dashboard-encounters-list');
+
+            const filtered = state.encounters.filter(e => e.patientPhone.toLowerCase().includes(query) || e.patientName.toLowerCase().includes(query) || e.id.toLowerCase().includes(query));
             
-            if (state.encounters.length === 0) {
-                const emptyMsg = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No active consultation records.</td></tr>`;
+            if (filtered.length === 0) {
+                const emptyMsg = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No matching consultation records.</td></tr>`;
                 encTable.innerHTML = emptyMsg;
                 dashEncTable.innerHTML = emptyMsg;
             } else {
-                const rows = state.encounters.map(e => `
+                const rows = filtered.map(e => `
                     <tr class="border-b border-slate-100 hover:bg-slate-50">
                         <td class="p-2 font-mono text-blue-600">${e.id}</td>
-                        <td class="p-2 font-semibold text-slate-700">${e.patientName}</td>
+                        <td class="p-2">
+                            <div class="font-semibold text-slate-700">${e.patientName}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">${e.patientPhone}</div>
+                        </td>
                         <td class="p-2">${e.vitals}</td>
                         <td class="p-2">
                             <span class="px-2 py-0.5 rounded text-[10px] ${e.labStatus === 'Pending' ? 'bg-amber-100 text-amber-800' : e.labStatus === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'}">
                                 ${e.labStatus}
                             </span>
+                            ${e.labResult ? `<div class="mt-1 text-[11px] text-emerald-700 font-semibold"><i class="fa-solid fa-square-check mr-1"></i> ${e.labResult}</div>` : ''}
                         </td>
                         <td class="p-2">${e.diagnosis}</td>
                         <td class="p-2 font-semibold text-slate-800">${formatKSh(e.consultFee + e.rxCost)}</td>
+                        <td class="p-2">
+                            <button onclick="openMedicalHistory('${e.patientId}')" class="text-xs text-blue-600 hover:underline font-medium"><i class="fa-solid fa-clock-rotate-left mr-1"></i> History</button>
+                        </td>
                     </tr>
                 `).join('');
                 encTable.innerHTML = rows;
                 dashEncTable.innerHTML = rows;
             }
+        }
 
-            // Lab Queue
+        // RENDER LAB QUEUE
+        function renderLabQueue() {
             const labTable = document.getElementById('lab-queue-table-body');
             const pendingLabs = state.encounters.filter(e => e.labRequest);
             if (pendingLabs.length === 0) {
@@ -731,7 +872,10 @@
                 labTable.innerHTML = pendingLabs.map(e => `
                     <tr class="border-b border-slate-100 hover:bg-slate-50">
                         <td class="p-2 font-mono text-blue-600">${e.id}</td>
-                        <td class="p-2 font-semibold text-slate-700">${e.patientName}</td>
+                        <td class="p-2">
+                            <div class="font-semibold text-slate-700">${e.patientName}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">${e.patientPhone}</div>
+                        </td>
                         <td class="p-2 font-medium text-amber-700">${e.labRequest}</td>
                         <td class="p-2">
                             <span class="px-2 py-0.5 rounded text-[10px] ${e.labStatus === 'Pending' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${e.labStatus}</span>
@@ -741,16 +885,19 @@
                                 ? `<input type="text" id="lab-input-${e.id}" placeholder="Enter lab results..." class="border border-slate-300 p-1 rounded text-xs w-full">`
                                 : `<span class="text-slate-700 font-medium">${e.labResult}</span>`}
                         </td>
-                        <td class="p-2">
+                        <td class="p-2 flex items-center space-x-2">
                             ${e.labStatus === 'Pending' 
-                                ? `<button onclick="submitLabResult('${e.id}')" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700">Save</button>`
+                                ? `<button onclick="submitLabResult('${e.id}')" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs">Save</button>`
                                 : `<i class="fa-solid fa-check text-emerald-500"></i>`}
+                            <button onclick="openMedicalHistory('${e.patientId}')" class="text-xs text-slate-500 hover:text-blue-600 ml-2" title="View History"><i class="fa-solid fa-clock-rotate-left"></i></button>
                         </td>
                     </tr>
                 `).join('');
             }
+        }
 
-            // Inventory Table
+        // RENDER INVENTORY TABLE
+        function renderInventoryTable() {
             const invTable = document.getElementById('inventory-table-body');
             invTable.innerHTML = state.inventory.map(item => `
                 <tr class="border-b border-slate-100 hover:bg-slate-50">
@@ -765,8 +912,6 @@
                     </td>
                 </tr>
             `).join('');
-
-            renderChart();
         }
 
         // CHART RENDERING

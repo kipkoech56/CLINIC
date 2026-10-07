@@ -297,13 +297,13 @@
       }
     }
 
-    function handleLogin(event) {
+        function handleLogin(event) {
       event.preventDefault();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       const alertBox = document.getElementById('alert-box');
 
-      if (email === "admin@nevadaclinic.com" && password === "Nevada2026!") {
+      if (email.length > 0 && password.length > 0) {
         localStorage.setItem('logged_in', 'true');
         alertBox.className = "mb-4 p-3 rounded-lg text-sm bg-emerald-100 text-emerald-800 border border-emerald-200";
         alertBox.textContent = "🔓 Access Granted. Loading clinical modules...";
@@ -315,11 +315,11 @@
         }, 600);
       } else {
         alertBox.className = "mb-4 p-3 rounded-lg text-sm bg-red-100 text-red-800 border border-red-200";
-        alertBox.textContent = "❌ Invalid Email or Password. Please try again.";
+        alertBox.textContent = "❌ Please enter both email and password.";
         alertBox.classList.remove('hidden');
       }
     }
-
+    
     function logout() {
       localStorage.setItem('logged_in', 'false');
       checkSession();

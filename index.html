@@ -284,18 +284,15 @@
 
     // --- SESSION CONTROL ---
     function checkSession() {
-      const isLoggedIn = true;
-      if (isLoggedIn) {
-        document.getElementById('login-card').classList.add('hidden');
-        document.getElementById('dashboard').classList.remove('hidden');
-        document.getElementById('user-session').classList.remove('hidden');
-        renderDashboard();
-      } else {
-        document.getElementById('login-card').classList.remove('hidden');
-        document.getElementById('dashboard').classList.add('hidden');
-        document.getElementById('user-session').classList.add('hidden');
-      }
-    }
+  // Always force logged-in status to true to bypass login authentication
+  const isLoggedIn = true;
+  if (isLoggedIn) {
+    document.getElementById('login-card').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('user-session').classList.remove('hidden');
+    renderDashboard();
+  }
+}
 
         function handleLogin(event) {
       event.preventDefault();

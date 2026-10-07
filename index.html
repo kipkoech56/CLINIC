@@ -1,303 +1,395 @@
-import streamlit as st
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nevada Clinic Management System</title>
+  
+  <!-- PWA Manifest Link -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
 
-# --- INITIALIZE SESSION STATE ---
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-    
+  <!-- Tailwind CSS CDN & FontAwesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col font-sans">
 
-# --- CLINIC DETAILS ---
-OWNER = "KIPLANgat CHEPKWONY"
-CLINIC_NAME = "NEVADA CLINIC"
-LOCATION = "Kipsuter"
-MOTTO = "We treat but God heals"
+  <!-- Header / Navigation Bar -->
+  <header class="bg-sky-800 text-white shadow-md py-4 px-6 flex justify-between items-center">
+    <div>
+      <h1 class="text-xl font-bold tracking-wide">🏥 NEVADA CLINIC MEDICS</h1>
+      <p class="text-xs text-sky-200">Location: Kipsuter | Owner: KIPLANGAT CHEPKWONY | "We treat but God heals"</p>
+    </div>
+    <div id="user-session" class="hidden flex items-center gap-3">
+      <span class="text-xs bg-sky-900 px-3 py-1 rounded-full text-sky-100 font-medium">Logged in as: Admin</span>
+      <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded transition font-semibold">
+        <i class="fa-solid fa-right-from-bracket mr-1"></i> Log Out
+      </button>
+    </div>
+  </header>
 
-# --- LOGIN PORTAL SYSTEM ---
-def login_portal():
-    st.title("🏥 Nevada Clinic Management System")
-    st.subheader("Staff Authentication Portal")
-    
-    with st.form("login_form"):
-        email = st.text_input("Email Address", placeholder="doctor@nevadaclinic.com")
-        password = st.text_input("Password", type="password", placeholder="••••••••")
-        submit_button = st.form_submit_button("Access Portal")
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- LOGIN PORTAL CARD -->
+    <div id="login-card" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-slate-200 mt-8 max-w-md mx-auto">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+          <i class="fa-solid fa-hospital-user"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800">Nevada Clinic System</h2>
+        <p class="text-sm text-slate-500 mt-1">Staff Authentication Portal</p>
+      </div>
+
+      <div id="alert-box" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email Address</label>
+          <input type="email" id="email" required placeholder="admin@nevadaclinic.com" 
+                 class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Password</label>
+          <input type="password" id="password" required placeholder="••••••••" 
+                 class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
+        </div>
+
+        <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-2.5 rounded-lg text-sm shadow transition">
+          Access System ⏩
+        </button>
+      </form>
+    </div>
+
+    <!-- CLINICAL DASHBOARD (Visible After Login) -->
+    <div id="dashboard" class="hidden space-y-6">
+      
+      <!-- Connection Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-circle-check text-emerald-600"></i>
+          <span class="text-sm font-semibold">Active Session: Securely connected to Nevada Medics Live Database.</span>
+        </div>
+      </div>
+
+      <!-- Financial & Inventory Analytics Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Active Patients</div>
+          <div class="text-2xl font-bold text-slate-800 mt-1" id="stat-patients-count">0</div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Total Revenue Generated</div>
+          <div class="text-2xl font-bold text-emerald-600 mt-1" id="stat-revenue">KES 0</div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Chemist Stock Types</div>
+          <div class="text-2xl font-bold text-sky-600 mt-1" id="stat-stock-types">0</div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Clinic Staff</div>
+          <div class="text-2xl font-bold text-slate-800 mt-1" id="stat-staff-count">0</div>
+        </div>
+      </div>
+
+      <!-- Main Operational Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- 1. Patient Registration & Lab Operations -->
+        <div class="space-y-6">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-user-plus text-sky-600"></i> Register New Patient
+            </h3>
+            <form onsubmit="handleRegisterPatient(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600">Full Name</label>
+                <input type="text" id="patient-name" required placeholder="e.g. Mercy Chebet" class="w-full px-3 py-2 border rounded-lg text-sm">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Age</label>
+                  <input type="number" id="patient-age" required placeholder="28" class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Primary Symptoms</label>
+                  <input type="text" id="patient-symptoms" required placeholder="Malaria symptoms" class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+              </div>
+              <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white py-2 rounded-lg text-sm font-medium">Register Patient</button>
+            </form>
+          </div>
+
+          <!-- Add Lab Result Form -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-microscope text-purple-600"></i> Assign Lab Result
+            </h3>
+            <form onsubmit="handleAddLabResult(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600">Select Patient</label>
+                <select id="lab-patient-select" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Test Name</label>
+                  <input type="text" id="lab-test-name" required placeholder="Malaria Rapid Test" class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Result Outcome</label>
+                  <input type="text" id="lab-result" required placeholder="Positive (Plasmodium)" class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+              </div>
+              <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-sm font-medium">Record Lab Result</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. Treatment & Billing Engine -->
+        <div class="space-y-6">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Treat & Bill Patient
+            </h3>
+            <form onsubmit="handleTreatAndBill(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600">Select Patient</label>
+                <select id="treat-patient-select" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Select Medication</label>
+                  <select id="treat-medicine-select" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Quantity</label>
+                  <input type="number" id="treat-quantity" min="1" required placeholder="5" class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+              </div>
+              <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-sm font-medium">Dispense & Generate Bill</button>
+            </form>
+          </div>
+
+          <!-- Receive Stock Form -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-boxes-packing text-amber-600"></i> Receive Stock Shipment
+            </h3>
+            <form onsubmit="handleReceiveStock(event)" class="space-y-3">
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Medicine Name</label>
+                  <input type="text" id="stock-med-name" required placeholder="PARACETAMOL" class="w-full px-3 py-2 border rounded-lg text-sm uppercase">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Quantity</label>
+                  <input type="number" id="stock-quantity" min="1" required placeholder="100" class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600">Unit Price (KES)</label>
+                  <input type="number" id="stock-price" min="0" required placeholder="5" class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+              </div>
+              <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg text-sm font-medium">Add to Stock</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Patient Records & Lab Outcomes Table -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-notes-medical text-sky-600"></i> Patient Medical & Lab Records
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600">
+            <thead class="bg-slate-100 text-xs font-bold uppercase text-slate-500">
+              <tr>
+                <th class="p-3">#</th>
+                <th class="p-3">Patient Name</th>
+                <th class="p-3">Age</th>
+                <th class="p-3">Symptoms</th>
+                <th class="p-3">Lab Results</th>
+              </tr>
+            </thead>
+            <tbody id="patient-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Chemist Stock Balance & Staff Members Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-    if submit_button:
-        if email == "admin@nevadaclinic.com" and password == "Nevada2026!":
-            st.success("🔓 Access Granted. Welcome back!")
-            return True
-        else:
-            st.error("❌ Invalid Email or Password. Please check your credentials.")
-            return False
-    return False
+        <!-- Inventory Table -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-pills text-emerald-600"></i> Chemist Stock Balance
+          </h3>
+          <table class="w-full text-left text-sm text-slate-600">
+            <thead class="bg-slate-100 text-xs font-bold uppercase text-slate-500">
+              <tr>
+                <th class="p-3">Item</th>
+                <th class="p-3">Stock Available</th>
+                <th class="p-3">Unit Price</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table-body"></tbody>
+          </table>
+        </div>
 
-# --- CONTROLLING THE INTERFACE LAYOUT ---
-if not st.session_state.logged_in:
-    if login_portal():
-        st.session_state.logged_in = True
-        st.rerun()
-else:
-    # Sidebar logout button
-    if st.sidebar.button("Log Out"):
-        st.session_state.logged_in = False
-        st.rerun()
+        <!-- Staff List -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-user-doctor text-indigo-600"></i> On-Duty Clinic Staff
+          </h3>
+          <ul id="staff-list" class="divide-y divide-slate-100"></ul>
+        </div>
 
-    st.success("Active Session: Connected to Nevada Medics Clinical Database")
-    # Your clinical elements and dashboard layouts continue beautifully below...
+      </div>
 
-# Core Data Structures
-patient_list = []
-inventory = {"PARACETAMOL": 150, "AMOXICILLIN": 80, "ANTISEPTIC": 45}
+    </div>
 
-def print_header():
-    print("==========================================")
-    print(f"          {CLINIC_NAME}")
-    print(f"          Location: {LOCATION}")
-    print(f"          Owner: {OWNER}")
-    print(f"          Motto: \"{MOTTO}\"")
-    print("==========================================\n")
+  </main>
 
-def register_patient(name, age, symptoms):
-    patient = {"name": name, "age": age, "symptoms": symptoms}
-    patient_list.append(patient)
-    print(f"✔ Success: Patient '{name}' registered.")
+  <!-- Application Logic -->
+  <script>
+    // --- CLINIC STATE VARIABLES ---
+    let patient_list = [
+      { name: "Mercy Chebet", age: "28", symptoms: "Malaria symptoms", lab_results: [{ test_name: "Malaria Rapid Test", result: "Positive (Plasmodium falciparum detected)", status: "Completed" }] },
+      { name: "John Kiprop", age: "34", symptoms: "Severe Headache", lab_results: [{ test_name: "Blood Pressure Check", result: "135/85 mmHg - Mild Hypertension", status: "Completed" }] }
+    ];
 
-def treat_patient(patient_name, medication, quantity):
-    print(f"\n--- Treating {patient_name} ---")
-    if medication in inventory and inventory[medication] >= quantity:
-        inventory[medication] -= quantity
-        print(f"✔ Dispensed {quantity} units of {medication}.")
-    else:
-        print(f"❌ Error: Insufficient stock of {medication}!")
+    let inventory = {
+      "PARACETAMOL": 150,
+      "AMOXICILLIN": 80,
+      "ANTISEPTIC": 45
+    };
 
-def print_dashboard():
-    print("\n--- NEVADA CLINIC DASHBOARD ---")
-    
-    print("\n[ Active Patients ]")
-    for i, p in enumerate(patient_list, 1):
-        print(f"{i}. Name: {p['name']} | Age: {p['age']} | Symptoms: {p['symptoms']}")
+    let MEDICINE_PRICES = {
+      "PARACETAMOL": 5,
+      "AMOXICILLIN": 15,
+      "ANTISEPTIC": 50
+    };
+
+    let total_revenue = 0;
+
+    let staff_members = [
+      { id: 101, name: "Dr. Langat", role: "Doctor", specialization: "General Practitioner" },
+      { id: 102, name: "Nurse Chepngeno", role: "Nurse", specialization: "Triage & Care" },
+      { id: 103, name: "Alex Cheruiyot", role: "Lab Technician", specialization: "Pathology" }
+    ];
+
+    // --- SESSION CONTROL ---
+    function checkSession() {
+      const isLoggedIn = localStorage.getItem('logged_in') === 'true';
+      if (isLoggedIn) {
+        document.getElementById('login-card').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        document.getElementById('user-session').classList.remove('hidden');
+        renderDashboard();
+      } else {
+        document.getElementById('login-card').classList.remove('hidden');
+        document.getElementById('dashboard').classList.add('hidden');
+        document.getElementById('user-session').classList.add('hidden');
+      }
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const alertBox = document.getElementById('alert-box');
+
+      if (email === "admin@nevadaclinic.com" && password === "Nevada2026!") {
+        localStorage.setItem('logged_in', 'true');
+        alertBox.className = "mb-4 p-3 rounded-lg text-sm bg-emerald-100 text-emerald-800 border border-emerald-200";
+        alertBox.textContent = "🔓 Access Granted. Loading clinical modules...";
+        alertBox.classList.remove('hidden');
         
-    print("\n[ Chemist Stock Balance ]")
-    for item, qty in inventory.items():
-        print(f"• {item}: {qty} units available")
-    print("==========================================")
+        setTimeout(() => {
+          alertBox.classList.add('hidden');
+          checkSession();
+        }, 600);
+      } else {
+        alertBox.className = "mb-4 p-3 rounded-lg text-sm bg-red-100 text-red-800 border border-red-200";
+        alertBox.textContent = "❌ Invalid Email or Password. Please try again.";
+        alertBox.classList.remove('hidden');
+      }
+    }
 
-# --- SIMULATION RUN ---
-print_header()
+    function logout() {
+      localStorage.setItem('logged_in', 'false');
+      checkSession();
+    }
 
-print("Automatically Simulating Clinic Actions...\n")
+    // --- CLINIC FUNCTIONS ---
+    function handleRegisterPatient(e) {
+      e.preventDefault();
+      const name = document.getElementById('patient-name').value.trim();
+      const age = document.getElementById('patient-age').value;
+      const symptoms = document.getElementById('patient-symptoms').value.trim();
 
-# 1. Register multiple patients
-register_patient("Mercy Chebet", "28", "Malaria symptoms")
-register_patient("John Kiprop", "34", "Severe Headache")
+      patient_list.push({ name, age, symptoms, lab_results: [] });
+      e.target.reset();
+      renderDashboard();
+      alert(`✔ Success: Patient '${name}' registered successfully.`);
+    }
 
-# 2. Simulate dispensing medication (updates inventory automatically)
-treat_patient("Mercy Chebet", "AMOXICILLIN", 10)
-treat_patient("John Kiprop", "PARACETAMOL", 2)
+    function handleAddLabResult(e) {
+      e.preventDefault();
+      const pIndex = document.getElementById('lab-patient-select').value;
+      const test_name = document.getElementById('lab-test-name').value.trim();
+      const result = document.getElementById('lab-result').value.trim();
 
-# 3. View final state of the clinic
-print_dashboard()
-print("\nSystem simulation completed successfully.")
-# --- CONTINUATION: PRICING, NEW STOCKS & REVENUE ---
+      if (pIndex !== "" && patient_list[pIndex]) {
+        if (!patient_list[pIndex].lab_results) {
+          patient_list[pIndex].lab_results = [];
+        }
+        patient_list[pIndex].lab_results.push({ test_name, result, status: "Completed" });
+        e.target.reset();
+        renderDashboard();
+        alert(`✔ Success: Recorded lab result for ${patient_list[pIndex].name}.`);
+      }
+    }
 
-# 4. Medicine Pricing Structure (Price per unit)
-MEDICINE_PRICES = {
-    "PARACETAMOL": 5,      # e.g., 5 KES or dollars per unit
-    "AMOXICILLIN": 15,
-    "ANTISEPTIC": 50
-}
+    function handleTreatAndBill(e) {
+      e.preventDefault();
+      const pIndex = document.getElementById('treat-patient-select').value;
+      const med = document.getElementById('treat-medicine-select').value;
+      const qty = parseInt(document.getElementById('treat-quantity').value);
 
-# Track clinic's total revenue from treatments
-total_revenue = 0
+      if (inventory[med] !== undefined && inventory[med] >= qty) {
+        inventory[med] -= qty;
+        const unitPrice = MEDICINE_PRICES[med] || 0;
+        const cost = unitPrice * qty;
+        total_revenue += cost;
 
-def receive_new_stock(medication, quantity):
-    """Simulates receiving a shipment of new medicine supplies."""
-    print(f"\n--- 📦 Receiving New Stock Shipment ---")
-    if medication in inventory:
-        inventory[medication] += quantity
-        print(f"✔ Success: Added {quantity} units to {medication}. New balance: {inventory[medication]}")
-    else:
-        # If it's a completely new brand of medicine
-        inventory[medication] = quantity
-        print(f"✔ Success: Registered and added new medicine type '{medication}' with {quantity} units.")
+        e.target.reset();
+        renderDashboard();
+        alert(`✔ Dispensed ${qty} units of ${med} to ${patient_list[pIndex].name}.\n💵 Bill Generated: KES ${cost}`);
+      } else {
+        alert(`❌ Error: Insufficient stock of ${med}!`);
+      }
+    }
 
-def treat_and_bill_patient(patient_name, medication, quantity):
-    """Enhanced version of treatment that handles inventory AND billing."""
-    global total_revenue
-    print(f"\n--- Treating & Billing {patient_name} ---")
-    
-    # Check if medicine exists and has enough stock
-    if medication not in inventory:
-        print(f"❌ Error: {medication} is not available in this clinic.")
-        return
-        
-    if inventory[medication] >= quantity:
-        # Deduct stock
-        inventory[medication] -= quantity
-        
-        # Calculate bill cost
-        unit_price = MEDICINE_PRICES.get(medication, 0)
-        total_cost = unit_price * quantity
-        total_revenue += total_cost
-        
-        print(f"✔ Dispensed {quantity} units of {medication}.")
-        print(f"💵 Bill Generated: {quantity} x {unit_price} = {total_cost} total cost.")
-    else:
-        print(f"❌ Error: Insufficient stock of {medication}!")
+    function handleReceiveStock(e) {
+      e.preventDefault();
+      const med = document.getElementById('stock-med-name').value.trim().toUpperCase();
+      const qty = parseInt(document.getElementById('stock-quantity').value);
+      const price = parseFloat(document.getElementById('stock-price').value);
 
-def print_financial_dashboard():
-    """Prints stock balances alongside their unit prices and total revenue."""
-    print("\n==========================================")
-    print(f"   {CLINIC_NAME} - INVENTORY & FINANCIALS  ")
-    print("==========================================")
-    
-    print("\n[ Available Medicine Prices & Stock ]")
-    for item, qty in inventory.items():
-        price = MEDICINE_PRICES.get(item, "N/A")
-        print(f"• {item:<12} | Stock: {qty:<4} units | Unit Price: {price}")
-        
-    print(f"\n📈 Total Clinic Revenue Generated: {total_revenue}")
-    print("==========================================\n")
+      inventory[med] = (inventory[med] || 0) + qty;
+      MEDICINE_PRICES[med] = price;
 
+      e.target.reset();
+      renderDashboard();
+      alert(`✔ Success: Added ${qty} units to ${med}. New balance: ${inventory[med]}`);
+    }
 
-# --- SIMULATING THE NEW CONTINUATION ACTIONS ---
-
-# 5. Simulate treating patients with automated billing calculations
-treat_and_bill_patient("Mercy Chebet", "AMOXICILLIN", 5)  # 5 units * 15 = 75
-treat_and_bill_patient("John Kiprop", "ANTISEPTIC", 1)    # 1 unit * 50 = 50
-
-# 6. Simulate receiving brand new stocks/supplies
-receive_new_stock("PARACETAMOL", 100)  # Adds to existing stock
-receive_new_stock("VITAMIN C", 200)    # Automatically introduces a new medicine type
-MEDICINE_PRICES["VITAMIN C"] = 3       # Set a price for the new medicine
-
-# 7. Print the updated financial and stock dashboard
-print_financial_dashboard()
-
-print("Extended simulation completed successfully.")
-# --- CONTINUATION: STAFF MEMBERS & LABORATORY RESULTS ---
-
-# 8. Staff Database (List of dictionaries representing clinic team)
-staff_members = [
-    {"id": 101, "name": "Dr. Langat", "role": "Doctor", "specialization": "General Practitioner"},
-    {"id": 102, "name": "Nurse Chepngeno", "role": "Nurse", "specialization": "Triage & Care"},
-    {"id": 103, "name": "Alex Cheruiyot", "role": "Lab Technician", "specialization": "Pathology"}
-]
-
-def add_lab_result(patient_name, test_name, result, status="Completed"):
-    """Finds a patient by name and attaches or updates their laboratory results."""
-    print(f"\n--- 🔬 Processing Lab Test for {patient_name} ---")
-    patient_found = False
-    
-    # Search for the patient in our existing list
-    for p in patient_list:
-        if p["name"].lower() == patient_name.lower():
-            # If the patient doesn't have a 'lab_results' key yet, initialize a list
-            if "lab_results" not in p:
-                p["lab_results"] = []
-            
-            # Append the new test details
-            p["lab_results"].append({
-                "test_name": test_name,
-                "result": result,
-                "status": status
-            })
-            print(f"✔ Success: Recorded '{test_name}' result for {patient_name}.")
-            patient_found = True
-            break
-            
-    if not patient_found:
-        print(f"❌ Error: Patient '{patient_name}' not found in the system. Cannot assign lab result.")
-
-def print_clinical_dashboard():
-    """Displays the active staff members and the medical lab reports for each patient."""
-    print("\n==========================================")
-    print(f"       {CLINIC_NAME} - CLINICAL PORTAL     ")
-    print("==========================================")
-    
-    # Display Staff Duties
-    print("\n[ On-Duty Clinic Staff ]")
-    for staff in staff_members:
-        print(f"• {staff['name']} ({staff['role']}) - Spec: {staff['specialization']}")
-        
-    # Display Patient Records & Lab Outcomes
-    print("\n[ Patient Medical & Lab Records ]")
-    if not patient_list:
-        print("No patient records available.")
-    else:
-        for i, p in enumerate(patient_list, 1):
-            print(f"\n{i}. Patient: {p['name']} | Age: {p['age']}")
-            print(f"   Symptoms: {p['symptoms']}")
-            
-            # Check if lab results exist for this patient
-            print("   Lab Results:")
-            if "lab_results" in p and p["lab_results"]:
-                for test in p["lab_results"]:
-                    print(f"     🔬 {test['test_name']}: {test['result']} [{test['status']}]")
-            else:
-                print("     (No lab tests ordered/pending for this patient)")
-    print("==========================================\n")
-
-
-# --- SIMULATING THE NEW CLINICAL ACTIONS ---
-
-# 9. Log laboratory tests for the simulated patients
-add_lab_result("Mercy Chebet", "Malaria Rapid Test", "Positive (Plasmodium falciparum detected)")
-add_lab_result("John Kiprop", "Blood Pressure Check", "135/85 mmHg - Mild Hypertension")
-
-# 10. Attempt a test for a non-existent patient to verify safety constraints
-add_lab_result("Unknown Patient", "Full Blood Count", "Normal")
-
-# 11. Print the clinical system view showing staff and patient lab outputs
-print_clinical_dashboard()
-
-print("Full clinic management simulation completed successfully.")
-import streamlit as st
-
-# 1. Initialize session state variables so the app remembers login status
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-
-# 2. Login Page Function
-def show_login_page():
-    st.set_page_config(page_title="Nevada Clinic Portal", page_icon="🏥", layout="centered")
-    
-    st.markdown("<h2 style='text-align: center; color: #007BFF;'>🏥 NEVADA CLINIC MEDICS</h2>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; color: #555555;'>Clinical Management System</h4>", unsafe_allow_html=True)
-    st.write("---")
-    
-    # Login Form Card
-    with st.form(key="login_form"):
-        st.subheader("Staff Login")
-        email = st.text_input("Email Address", placeholder="staff@nevadaclinic.com")
-        password = st.text_input("Password", type="password", placeholder="••••••••")
-        
-        submit = st.form_submit_button("Access System ⏩")
-        
-    if submit:
-        # Secure credential check
-        if email == "admin@nevadaclinic.com" and password == "Nevada2026!":
-            st.session_state.logged_in = True
-            st.success("🔓 Access granted! Loading clinical modules...")
-            st.rerun()
-        else:
-            st.error("❌ Invalid Email or Password. Please try again.")
-
-# 3. Main App Traffic Controller
-if not st.session_state.logged_in:
-    show_login_page()
-else:
-    # Sidebar logout controls
-    st.sidebar.markdown("### 👨‍⚕️ Staff Session")
-    st.sidebar.info("Logged in as: Admin")
-    if st.sidebar.button("Log Out"):
-        st.session_state.logged_in = False
-        st.rerun()
-
-    # ------------------------------------------------------------------
-    # YOUR ACTUAL CLINIC APPLICATION INTERFACE GOES BELOW THIS LINE
-    # ------------------------------------------------------------------
-    st.title("🎛️ Clinical Dashboard Portal")
-    st.success("Securely connected to Nevada Medics Live Database.")
-    
-    # Example table integration for your patient lists:
-    []
+    // --- RENDER UI ---
+    function renderDashboard() {
+      // Metrics
+      document.getElementById('stat-patients-count

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nevada Clinic v2.5</title>
+    <title>Nevada Clinic v2.5 - Comprehensive EMR & Management System</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,11 +24,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Smooth color transition for dark/light mode toggles */
         body, header, nav, div, section, table, input, select, textarea, button {
             transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
-        /* Hide scrollbars for clean UI */
         .scrollbar-none::-webkit-scrollbar {
             display: none;
         }
@@ -38,7 +36,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
     <!-- TOP HEADER / BRANDING -->
     <header class="bg-slate-950 border-b border-slate-800 dark:bg-slate-950 dark:border-slate-800 bg-white border-slate-200 p-4 sticky top-0 z-30 shadow-md">
@@ -50,13 +48,13 @@
                 <div>
                     <div class="flex items-center space-x-2">
                         <h1 class="font-bold text-xl text-slate-900 dark:text-white tracking-tight" id="header-clinic-name">Nevada Clinic</h1>
-                        <span class="text-[10px] bg-blue-500/20 text-blue-600 dark:text-blue-400 font-semibold px-2 py-0.5 rounded-full border border-blue-500/30">v2.5</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-600 dark:text-blue-400 font-semibold px-2 py-0.5 rounded-full border border-blue-500/30">v2.5 Pro</span>
                     </div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 italic">"<span id="header-motto">We heal but God heals</span>" • Owner: <span id="header-owner" class="text-slate-700 dark:text-slate-200 font-semibold">Weldon Chepkwony</span></p>
                 </div>
             </div>
 
-            <!-- Header Right Controls (Quick Theme Toggle & Active Role Selector) -->
+            <!-- Header Right Controls (Theme Toggle & Role Selector) -->
             <div class="flex items-center space-x-3 w-full sm:w-auto">
                 <!-- Theme Quick Switch Button -->
                 <button onclick="toggleDarkMode()" title="Toggle Theme" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-yellow-400 border border-slate-200 dark:border-slate-700 hover:scale-105 transition">
@@ -114,7 +112,7 @@
 
         <!-- ALERT BANNER -->
         <div id="status-toast" class="hidden bg-blue-100 border border-blue-300 text-blue-900 dark:bg-blue-900/40 dark:border-blue-500/30 dark:text-blue-200 text-xs p-3 rounded-xl flex justify-between items-center transition">
-            <span id="toast-msg"><i class="fa-solid fa-circle-info mr-2"></i> System updated.</span>
+            <span id="toast-msg"><i class="fa-solid fa-circle-info mr-2"></i> System updated successfully.</span>
             <button onclick="document.getElementById('status-toast').classList.add('hidden')" class="text-blue-500 dark:text-blue-400 hover:font-bold">&times;</button>
         </div>
 
@@ -187,7 +185,7 @@
                 <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center">
                     <i class="fa-solid fa-user-nurse text-blue-600 dark:text-blue-400 mr-2"></i> Nurse Triage & Diagnostic Hub
                 </h2>
-                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Review live medicine pricing inventory, dispatch lab tests, and track lab results for active patients.</p>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Review live medicine pricing inventory, dispatch lab tests with the expanded diagnostic picker, and track results.</p>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -204,7 +202,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Select Required Test</label>
+                            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Select Required Test (20+ Tests Available)</label>
                             <button type="button" onclick="openTestModal()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-left text-slate-900 dark:text-white flex justify-between items-center hover:border-purple-500">
                                 <span id="selected-test-display">Malaria Rapid Diagnostic Test (RDT) - KES 500</span>
                                 <i class="fa-solid fa-chevron-down text-slate-400"></i>
@@ -212,7 +210,7 @@
                         </div>
                         <div>
                             <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Nurse Notes / Symptoms</label>
-                            <textarea id="nurse-lab-notes" rows="2" placeholder="e.g. High fever, headache..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-purple-500"></textarea>
+                            <textarea id="nurse-lab-notes" rows="2" placeholder="e.g. High fever, chills..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-purple-500"></textarea>
                         </div>
                         <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2.5 rounded-xl transition shadow-md shadow-purple-600/20">
                             <i class="fa-solid fa-paper-plane mr-1"></i> Dispatch Lab Request
@@ -249,7 +247,7 @@
                     <h3 class="font-bold text-xs text-blue-700 dark:text-blue-300 uppercase tracking-wider">
                         <i class="fa-solid fa-pills text-blue-600 dark:text-blue-400 mr-1.5"></i> Available Medicine Inventory & Unit Pricing
                     </h3>
-                    <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-medium">Read-Only View for Nursing Staff</span>
+                    <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-medium">Live Inventory View</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3" id="nurse-med-cards">
                     <!-- Populated dynamically -->
@@ -285,7 +283,7 @@
                                 <input type="number" id="consult-qty" min="1" value="1" placeholder="Qty" class="w-1/3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-emerald-500">
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20">Save Consultation Record</button>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20">Save Consultation & Charge Pharmacy</button>
                     </form>
                 </div>
 
@@ -316,16 +314,17 @@
             <div class="bg-white border border-slate-200 dark:bg-slate-800/60 dark:border-slate-700/80 p-5 rounded-2xl shadow-sm dark:shadow-xl space-y-4">
                 <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
                     <h2 class="font-bold text-sm text-slate-900 dark:text-white flex items-center">
-                        <i class="fa-solid fa-microscope text-amber-500 mr-2"></i> Laboratory Queue & Processing
+                        <i class="fa-solid fa-microscope text-amber-500 mr-2"></i> Laboratory Queue & Processing Hub
                     </h2>
-                    <span class="text-xs font-semibold bg-amber-500/20 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-500/30">Lab Technician Access</span>
+                    <span class="text-xs font-semibold bg-amber-500/20 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-500/30">Laboratory Department</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
                             <tr class="bg-slate-100 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                                 <th class="p-2.5">Patient ID & Name</th>
-                                <th class="p-2.5">Requested Diagnostic Test</th>
+                                <th class="p-2.5">Requested Test</th>
+                                <th class="p-2.5">Price</th>
                                 <th class="p-2.5">Status</th>
                                 <th class="p-2.5">Result Entry</th>
                                 <th class="p-2.5">Action</th>
@@ -352,6 +351,7 @@
                         <thead>
                             <tr class="bg-slate-100 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                                 <th class="p-2.5">Medicine Name</th>
+                                <th class="p-2.5">Category</th>
                                 <th class="p-2.5">In Stock</th>
                                 <th class="p-2.5">Selling Price (KES)</th>
                                 <th class="p-2.5">Status</th>
@@ -367,11 +367,69 @@
 
         <!-- 6. ADMIN CONTROL TAB -->
         <section id="tab-admin" class="tab-content hidden space-y-6">
+            
+            <!-- Executive Summary & Revenue Tracking Dashboard -->
+            <div class="bg-gradient-to-r from-blue-900 to-indigo-900 border border-blue-700/50 p-6 rounded-2xl shadow-xl text-white space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-blue-700/50 pb-4">
+                    <div>
+                        <h2 class="text-base font-bold flex items-center">
+                            <i class="fa-solid fa-chart-line text-emerald-400 mr-2 text-xl"></i> Clinic Financial Analytics & Revenue Summary
+                        </h2>
+                        <p class="text-xs text-blue-200 mt-0.5">Real-time revenue computed from completed laboratory test orders and pharmacy drug dispensations.</p>
+                    </div>
+                    <span class="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/40 font-semibold">Executive View</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div class="bg-slate-900/60 backdrop-blur p-4 rounded-xl border border-slate-700/60">
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Gross Revenue</p>
+                        <p id="rev-total" class="text-2xl font-black text-emerald-400 mt-1">KES 0</p>
+                    </div>
+                    <div class="bg-slate-900/60 backdrop-blur p-4 rounded-xl border border-slate-700/60">
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Pharmacy Sales</p>
+                        <p id="rev-pharmacy" class="text-xl font-bold text-blue-300 mt-1">KES 0</p>
+                    </div>
+                    <div class="bg-slate-900/60 backdrop-blur p-4 rounded-xl border border-slate-700/60">
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Laboratory Revenue</p>
+                        <p id="rev-lab" class="text-xl font-bold text-amber-300 mt-1">KES 0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Forms Row 1: Add New Medicine Stock & Adjust Drug Prices -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Price Adjustment Tool -->
+                <!-- Add New Medicine Stock & Price -->
                 <div class="bg-white border border-slate-200 dark:bg-slate-800/60 dark:border-slate-700/80 p-5 rounded-2xl shadow-sm dark:shadow-xl space-y-4">
                     <h2 class="font-bold text-sm text-slate-900 dark:text-white flex items-center border-b border-slate-200 dark:border-slate-700 pb-3">
-                        <i class="fa-solid fa-tags text-yellow-600 dark:text-yellow-400 mr-2"></i> Fix & Adjust Medicine Prices (Admin Only)
+                        <i class="fa-solid fa-plus-circle text-emerald-600 dark:text-emerald-400 mr-2"></i> Add New Medicine Stock & Selling Price
+                    </h2>
+                    <form onsubmit="handleAddNewDrug(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Medicine Name & Dosage</label>
+                            <input type="text" id="admin-new-drug-name" required placeholder="e.g. Azithromycin 500mg" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Category</label>
+                            <input type="text" id="admin-new-drug-cat" required placeholder="e.g. Antibiotic" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-emerald-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Initial Stock Qty</label>
+                                <input type="number" id="admin-new-drug-stock" required min="1" placeholder="e.g. 100" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Selling Price (KES)</label>
+                                <input type="number" id="admin-new-drug-price" required min="1" placeholder="e.g. 450" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20">Add Drug Stock to Inventory</button>
+                    </form>
+                </div>
+
+                <!-- Fix & Adjust Drug Prices -->
+                <div class="bg-white border border-slate-200 dark:bg-slate-800/60 dark:border-slate-700/80 p-5 rounded-2xl shadow-sm dark:shadow-xl space-y-4">
+                    <h2 class="font-bold text-sm text-slate-900 dark:text-white flex items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <i class="fa-solid fa-tags text-yellow-600 dark:text-yellow-400 mr-2"></i> Adjust Existing Drug Prices
                     </h2>
                     <form onsubmit="handlePriceAdjustment(event)" class="space-y-3 text-xs">
                         <div>
@@ -385,6 +443,29 @@
                             <input type="number" id="admin-drug-price" required min="1" placeholder="Enter new unit price..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-yellow-500">
                         </div>
                         <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-2.5 rounded-xl transition shadow-md shadow-yellow-600/20">Update Drug Price</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Forms Row 2: Adjust Lab Test Prices & Register Staff -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Adjust Laboratory Test Prices -->
+                <div class="bg-white border border-slate-200 dark:bg-slate-800/60 dark:border-slate-700/80 p-5 rounded-2xl shadow-sm dark:shadow-xl space-y-4">
+                    <h2 class="font-bold text-sm text-slate-900 dark:text-white flex items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <i class="fa-solid fa-vial-circle-check text-purple-600 dark:text-purple-400 mr-2"></i> Adjust / Fix Laboratory Test Prices
+                    </h2>
+                    <form onsubmit="handleLabPriceAdjustment(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Select Lab Test</label>
+                            <select id="admin-labtest-select" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-purple-500">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-medium">New Test Fee (KES)</label>
+                            <input type="number" id="admin-labtest-price" required min="1" placeholder="Enter new fee..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-2.5 rounded-lg text-slate-900 dark:text-white outline-none focus:border-purple-500">
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2.5 rounded-xl transition shadow-md shadow-purple-600/20">Update Lab Test Price</button>
                     </form>
                 </div>
 
@@ -444,7 +525,7 @@
                     </div>
                 </div>
 
-                <!-- Theme Selection Card -->
+                <!-- Theme Selection Cards -->
                 <div class="space-y-4">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Appearance Theme</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -455,7 +536,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-sm">Dark Mode</h4>
-                                <p class="text-xs text-slate-400">Dark background for night shifts & reduced eye strain</p>
+                                <p class="text-xs text-slate-400">Dark slate background for night shifts & reduced eye strain</p>
                             </div>
                         </div>
 
@@ -466,7 +547,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-sm">Light Mode</h4>
-                                <p class="text-xs text-slate-500">Clean, bright medical dashboard styling</p>
+                                <p class="text-xs text-slate-500">Clean, crisp white medical dashboard layout</p>
                             </div>
                         </div>
                     </div>
@@ -498,21 +579,27 @@
 
     </main>
 
-    <!-- TEST SELECTION POPUP MODAL (MATCHING SCREENSHOT STYLING EXACTLY) -->
+    <!-- EXPANDED TEST SELECTION POPUP MODAL -->
     <div id="test-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-amber-50 text-slate-900 rounded-3xl max-w-sm w-full p-2 space-y-1 shadow-2xl border border-amber-200">
+        <div class="bg-amber-50 text-slate-900 rounded-3xl max-w-md w-full p-3 space-y-2 shadow-2xl border border-amber-200">
             <div class="p-3 text-xs font-semibold text-slate-600 border-b border-amber-200/60 flex justify-between items-center">
-                <span>Select Diagnostic Test</span>
+                <span class="font-bold text-slate-800"><i class="fa-solid fa-flask text-amber-600 mr-1.5"></i> Select Diagnostic Test (20+ Suggestions)</span>
                 <button onclick="closeTestModal()" class="text-slate-400 hover:text-slate-700 text-lg">&times;</button>
             </div>
-            <div class="space-y-1 py-1" id="test-option-list">
+            
+            <!-- Category Filter Search -->
+            <div class="px-1">
+                <input type="text" id="test-modal-search" oninput="filterModalTests()" placeholder="Filter diagnostic tests by name or category..." class="w-full px-3 py-2 bg-white border border-amber-200 text-xs text-slate-900 rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+            </div>
+
+            <div class="space-y-1.5 py-1 max-h-80 overflow-y-auto px-1" id="test-option-list">
                 <!-- Dynamic radio options generated here -->
             </div>
         </div>
     </div>
 
     <script>
-        // GLOBAL DATA & SETTINGS STATE
+        // GLOBAL STATE & DATABASE
         let state = {
             theme: 'dark',
             clinicName: 'Nevada Clinic',
@@ -521,25 +608,44 @@
             currentRole: 'admin',
             patients: [
                 { id: 'PAT-101', name: 'Alice Rotich', phone: '0712345678', age: 28, gender: 'Female', visits: 3 },
-                { id: 'PAT-102', name: 'Bernard Lagat', phone: '0723456789', age: 42, gender: 'Male', visits: 1 }
+                { id: 'PAT-102', name: 'Bernard Lagat', phone: '0723456789', age: 42, gender: 'Male', visits: 1 },
+                { id: 'PAT-103', name: 'Catherine Chebet', phone: '0733998877', age: 31, gender: 'Female', visits: 2 }
             ],
             medicines: [
-                { name: 'Amoxicillin 500mg', price: 350, stock: 120 },
-                { name: 'Paracetamol 500mg', price: 30, stock: 500 },
-                { name: 'Coartem (Antimalarial)', price: 600, stock: 80 },
-                { name: 'Cetirizine 10mg', price: 50, stock: 45 }
+                { name: 'Amoxicillin 500mg', category: 'Antibiotic', price: 350, stock: 120 },
+                { name: 'Paracetamol 500mg', category: 'Analgesic', price: 30, stock: 500 },
+                { name: 'Coartem (Antimalarial)', category: 'Antimalarial', price: 600, stock: 80 },
+                { name: 'Cetirizine 10mg', category: 'Antihistamine', price: 50, stock: 45 },
+                { name: 'Ciprofloxacin 500mg', category: 'Antibiotic', price: 400, stock: 90 },
+                { name: 'Metronidazole 400mg', category: 'Antiprotozoal', price: 150, stock: 150 }
             ],
+            // EXPANDED LAB TEST LIST (20 SUGGESTIONS COVERING MULTIPLE DEPARTMENTS)
             tests: [
-                { name: 'Malaria Rapid Diagnostic Test (RDT)', price: 500 },
-                { name: 'Full Blood Count (FBC)', price: 1200 },
-                { name: 'Urinalysis Profile', price: 600 },
-                { name: 'Blood Glucose Test', price: 400 },
-                { name: 'Typhoid Widal Test', price: 800 }
+                { id: 'T01', name: 'Malaria Rapid Diagnostic Test (RDT)', category: 'Parasitology', price: 500 },
+                { id: 'T02', name: 'Full Blood Count (FBC)', category: 'Hematology', price: 1200 },
+                { id: 'T03', name: 'Urinalysis Profile', category: 'Biochemistry', price: 600 },
+                { id: 'T04', name: 'Fasting Blood Glucose', category: 'Endocrine', price: 400 },
+                { id: 'T05', name: 'Typhoid Widal Test', category: 'Serology', price: 800 },
+                { id: 'T06', name: 'Stool Antigen & Microscopy', category: 'Parasitology', price: 700 },
+                { id: 'T07', name: 'Liver Function Tests (LFT)', category: 'Biochemistry', price: 2500 },
+                { id: 'T08', name: 'Renal / Kidney Function Test (KFT)', category: 'Biochemistry', price: 2800 },
+                { id: 'T09', name: 'Lipid Profile (Cholesterol)', category: 'Biochemistry', price: 2200 },
+                { id: 'T10', name: 'Thyroid Stimulating Hormone (TSH)', category: 'Endocrine', price: 3000 },
+                { id: 'T11', name: 'HbA1c Glycated Hemoglobin', category: 'Endocrine', price: 2500 },
+                { id: 'T12', name: 'H. Pylori Antigen Test', category: 'Gastroenterology', price: 1000 },
+                { id: 'T13', name: 'Erythrocyte Sedimentation Rate (ESR)', category: 'Hematology', price: 600 },
+                { id: 'T14', name: 'Blood Grouping & Rh Factor', category: 'Hematology', price: 500 },
+                { id: 'T15', name: 'High Sensitivity CRP', category: 'Immunology', price: 1800 },
+                { id: 'T16', name: 'Rheumatoid Factor (RF)', category: 'Immunology', price: 1500 },
+                { id: 'T17', name: 'Sputum GeneXpert / AFB', category: 'Microbiology', price: 1500 },
+                { id: 'T18', name: 'Urine Culture & Sensitivity', category: 'Microbiology', price: 2000 },
+                { id: 'T19', name: 'Brucella Antibody Screen', category: 'Serology', price: 900 },
+                { id: 'T20', name: 'Serum Electrolytes (Na+, K+, Cl-)', category: 'Biochemistry', price: 1800 }
             ],
-            selectedTest: { name: 'Malaria Rapid Diagnostic Test (RDT)', price: 500 },
+            selectedTest: { name: 'Malaria Rapid Diagnostic Test (RDT)', category: 'Parasitology', price: 500 },
             labRequests: [
-                { patientId: 'PAT-101', patientName: 'Alice Rotich', test: 'Malaria Rapid Diagnostic Test (RDT)', result: 'Positive (P. falciparum)', status: 'Completed' },
-                { patientId: 'PAT-102', patientName: 'Bernard Lagat', test: 'Full Blood Count (FBC)', result: 'Normal Range', status: 'Completed' }
+                { patientId: 'PAT-101', patientName: 'Alice Rotich', test: 'Malaria Rapid Diagnostic Test (RDT)', price: 500, result: 'Positive (P. falciparum)', status: 'Completed' },
+                { patientId: 'PAT-102', patientName: 'Bernard Lagat', test: 'Full Blood Count (FBC)', price: 1200, result: 'Normal Range', status: 'Completed' }
             ],
             encounters: [
                 { patientName: 'Alice Rotich', diagnosis: 'Acute Malaria Symptoms', drug: 'Coartem (Antimalarial) x1', labResult: 'Positive' }
@@ -547,18 +653,18 @@
             staff: [
                 { name: 'Weldon Chepkwony', role: 'Owner / Admin' },
                 { name: 'Nurse Mary', role: 'Nurse' },
-                { name: 'Dr. John', role: 'Consultant' }
+                { name: 'Dr. John', role: 'Consultant' },
+                { name: 'Peter Koech', role: 'Lab Technician' }
             ]
         };
 
-        // ON INITIAL LOAD
+        // INITIALIZE APP ON LOAD
         window.onload = function() {
             setTheme(state.theme);
             switchRole('admin');
             renderAll();
         };
 
-        // THEME SWITCHER LOGIC (LIGHT MODE <-> DARK MODE)
         function setTheme(mode) {
             state.theme = mode;
             const html = document.documentElement;
@@ -591,7 +697,6 @@
             setTheme(state.theme === 'dark' ? 'light' : 'dark');
         }
 
-        // ROLE SWITCHER & ACCESS PERMISSIONS
         function switchRole(role) {
             state.currentRole = role;
             const badge = document.getElementById('role-badge');
@@ -609,11 +714,13 @@
 
             const navAdmin = document.getElementById('nav-admin');
 
+            // Registration Staff gets cross access to Nurse, Consultant, Lab, Intake, but restricted from Admin Pricing/Revenue Control
             if (role === 'admin') {
                 navAdmin.classList.remove('hidden');
+                showToast("Admin mode active: Full revenue, pricing, and system control enabled.");
             } else if (role === 'reg') {
                 navAdmin.classList.add('hidden');
-                showToast("Registration Staff access enabled.");
+                showToast("Registration Staff mode: Cross-access to operational workflows enabled (Admin section restricted).");
             } else {
                 navAdmin.classList.add('hidden');
             }
@@ -621,7 +728,6 @@
             renderAll();
         }
 
-        // NAVIGATION LOGIC
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(el => {
@@ -638,21 +744,36 @@
             }
         }
 
-        // DIAGNOSTIC TEST MODAL LOGIC
         function openTestModal() {
-            const list = document.getElementById('test-option-list');
-            list.innerHTML = state.tests.map((t, idx) => `
-                <label onclick="selectTest(${idx})" class="flex items-center justify-between p-3 rounded-2xl cursor-pointer hover:bg-amber-100/70 transition">
-                    <span class="text-xs font-bold text-slate-800">${t.name} - KES ${t.price.toLocaleString()}</span>
-                    <input type="radio" name="test-choice" ${state.selectedTest.name === t.name ? 'checked' : ''} class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
-                </label>
-            `).join('');
+            renderModalTests(state.tests);
             document.getElementById('test-modal').classList.remove('hidden');
         }
 
-        function selectTest(idx) {
-            state.selectedTest = state.tests[idx];
-            document.getElementById('selected-test-display').innerText = `${state.selectedTest.name} - KES ${state.selectedTest.price.toLocaleString()}`;
+        function renderModalTests(list) {
+            const container = document.getElementById('test-option-list');
+            container.innerHTML = list.map((t, idx) => `
+                <label onclick="selectTestByName('${t.name}')" class="flex items-center justify-between p-2.5 rounded-2xl cursor-pointer hover:bg-amber-100/80 transition border border-amber-200/50">
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">${t.name}</p>
+                        <span class="text-[10px] text-amber-700 font-semibold">${t.category}</span>
+                    </div>
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">KES ${t.price.toLocaleString()}</span>
+                </label>
+            `).join('');
+        }
+
+        function filterModalTests() {
+            const q = document.getElementById('test-modal-search').value.toLowerCase();
+            const filtered = state.tests.filter(t => t.name.toLowerCase().includes(q) || t.category.toLowerCase().includes(q));
+            renderModalTests(filtered);
+        }
+
+        function selectTestByName(name) {
+            const test = state.tests.find(t => t.name === name);
+            if (test) {
+                state.selectedTest = test;
+                document.getElementById('selected-test-display').innerText = `${test.name} - KES ${test.price.toLocaleString()}`;
+            }
             closeTestModal();
         }
 
@@ -660,7 +781,6 @@
             document.getElementById('test-modal').classList.add('hidden');
         }
 
-        // HANDLERS FOR ACTIONS
         function handlePatientRegistration(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value;
@@ -689,6 +809,7 @@
                 patientId: patient.id,
                 patientName: patient.name,
                 test: state.selectedTest.name,
+                price: state.selectedTest.price,
                 result: 'Pending Lab Processing...',
                 status: 'Pending'
             });
@@ -697,6 +818,30 @@
             renderAll();
         }
 
+        // ADMIN CAPABILITY 1: Add Stock & Price
+        function handleAddNewDrug(e) {
+            e.preventDefault();
+            if (state.currentRole !== 'admin') {
+                alert("Only Administrators can add new drug stock!");
+                return;
+            }
+
+            const name = document.getElementById('admin-new-drug-name').value;
+            const category = document.getElementById('admin-new-drug-cat').value;
+            const stock = parseInt(document.getElementById('admin-new-drug-stock').value);
+            const price = parseFloat(document.getElementById('admin-new-drug-price').value);
+
+            state.medicines.push({ name, category, price, stock });
+            
+            document.getElementById('admin-new-drug-name').value = '';
+            document.getElementById('admin-new-drug-stock').value = '';
+            document.getElementById('admin-new-drug-price').value = '';
+
+            showToast(`Added new stock: ${name} @ KES ${price}`);
+            renderAll();
+        }
+
+        // ADMIN CAPABILITY 2: Adjust Drug Price
         function handlePriceAdjustment(e) {
             e.preventDefault();
             if (state.currentRole !== 'admin') {
@@ -709,7 +854,25 @@
 
             if (state.medicines[drugIndex]) {
                 state.medicines[drugIndex].price = newPrice;
-                showToast(`Updated ${state.medicines[drugIndex].name} to KES ${newPrice}`);
+                showToast(`Updated ${state.medicines[drugIndex].name} price to KES ${newPrice}`);
+                renderAll();
+            }
+        }
+
+        // ADMIN CAPABILITY 3: Adjust Lab Test Price
+        function handleLabPriceAdjustment(e) {
+            e.preventDefault();
+            if (state.currentRole !== 'admin') {
+                alert("Only Administrators can modify lab test prices!");
+                return;
+            }
+
+            const testIndex = document.getElementById('admin-labtest-select').value;
+            const newPrice = parseFloat(document.getElementById('admin-labtest-price').value);
+
+            if (state.tests[testIndex]) {
+                state.tests[testIndex].price = newPrice;
+                showToast(`Updated ${state.tests[testIndex].name} fee to KES ${newPrice}`);
                 renderAll();
             }
         }
@@ -748,7 +911,7 @@
             if (input && state.labRequests[idx]) {
                 state.labRequests[idx].result = input.value;
                 state.labRequests[idx].status = 'Completed';
-                showToast("Lab result saved.");
+                showToast("Lab result completed.");
                 renderAll();
             }
         }
@@ -759,9 +922,12 @@
             const patient = state.patients.find(p => p.id === patientId);
             const diagnosis = document.getElementById('consult-diagnosis').value;
             const medIndex = document.getElementById('consult-medicine').value;
-            const qty = document.getElementById('consult-qty').value;
+            const qty = parseInt(document.getElementById('consult-qty').value);
 
             const med = state.medicines[medIndex];
+            if (med) {
+                med.stock = Math.max(0, med.stock - qty);
+            }
 
             state.encounters.push({
                 patientName: patient ? patient.name : 'Unknown',
@@ -770,12 +936,32 @@
                 labResult: 'N/A'
             });
 
-            showToast("Clinical consultation recorded.");
+            showToast("Clinical consultation saved & inventory deducted.");
             renderAll();
         }
 
-        // RENDER ALL DATA
         function renderAll() {
+            // Compute Total Revenues (Admin Check Revenue Feature)
+            let labRevenue = state.labRequests.reduce((acc, curr) => curr.status === 'Completed' ? acc + (curr.price || 500) : acc, 0);
+            
+            // Estimated Drug Revenue from encounters
+            let drugRevenue = 0;
+            state.encounters.forEach(e => {
+                if (e.drug && e.drug !== 'None') {
+                    const parts = e.drug.split(' x');
+                    const drugName = parts[0];
+                    const qty = parseInt(parts[1]) || 1;
+                    const med = state.medicines.find(m => m.name === drugName);
+                    if (med) drugRevenue += (med.price * qty);
+                }
+            });
+
+            const totalRevenue = labRevenue + drugRevenue;
+
+            document.getElementById('rev-total').innerText = `KES ${totalRevenue.toLocaleString()}`;
+            document.getElementById('rev-pharmacy').innerText = `KES ${drugRevenue.toLocaleString()}`;
+            document.getElementById('rev-lab').innerText = `KES ${labRevenue.toLocaleString()}`;
+
             // Dropdowns
             const patientOpts = state.patients.map(p => `<option value="${p.id}">${p.name} (${p.phone})</option>`).join('');
             document.getElementById('nurse-lab-patient').innerHTML = patientOpts;
@@ -784,6 +970,9 @@
             const medOpts = state.medicines.map((m, i) => `<option value="${i}">${m.name} - KES ${m.price}</option>`).join('');
             document.getElementById('admin-drug-select').innerHTML = medOpts;
             document.getElementById('consult-medicine').innerHTML = medOpts;
+
+            const testOpts = state.tests.map((t, i) => `<option value="${i}">${t.name} (${t.category}) - KES ${t.price}</option>`).join('');
+            document.getElementById('admin-labtest-select').innerHTML = testOpts;
 
             // Directory
             document.getElementById('patient-directory-list').innerHTML = state.patients.map(p => `
@@ -806,12 +995,12 @@
                 </tr>
             `).join('');
 
-            // Nurse Medicine Read-Only Cards
+            // Nurse Medicine Cards
             document.getElementById('nurse-med-cards').innerHTML = state.medicines.map(m => `
                 <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 p-3 rounded-xl flex justify-between items-center">
                     <div>
                         <p class="font-bold text-slate-800 dark:text-slate-200 text-xs">${m.name}</p>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Stock: ${m.stock} units</p>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">${m.category || 'Drug'} • Stock: ${m.stock}</p>
                     </div>
                     <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">KES ${m.price}</span>
                 </div>
@@ -822,6 +1011,7 @@
                 <tr>
                     <td class="p-2.5 font-semibold">${l.patientName} <span class="text-slate-400 text-[10px]">(${l.patientId})</span></td>
                     <td class="p-2.5 text-amber-600 dark:text-amber-300 font-medium">${l.test}</td>
+                    <td class="p-2.5 font-bold text-emerald-600 dark:text-emerald-400">KES ${(l.price || 500).toLocaleString()}</td>
                     <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-semibold ${l.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-amber-500/20 text-amber-700 dark:text-amber-400'}">${l.status}</span></td>
                     <td class="p-2.5">
                         ${l.status === 'Pending' 
@@ -840,6 +1030,7 @@
             document.getElementById('pharmacy-stock-table').innerHTML = state.medicines.map(m => `
                 <tr>
                     <td class="p-2.5 font-semibold">${m.name}</td>
+                    <td class="p-2.5 text-slate-500 dark:text-slate-400">${m.category || 'General'}</td>
                     <td class="p-2.5 font-mono">${m.stock} units</td>
                     <td class="p-2.5 font-bold text-emerald-600 dark:text-emerald-400">KES ${m.price}</td>
                     <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-semibold ${m.stock > 50 ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-red-500/20 text-red-700 dark:text-red-400'}">${m.stock > 50 ? 'Available' : 'Low Stock'}</span></td>
@@ -875,7 +1066,7 @@
                     <td class="p-2.5 font-semibold">${p.name}</td>
                     <td class="p-2.5 font-mono">${p.phone}</td>
                     <td class="p-2.5"><span class="bg-blue-500/20 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded font-medium">${p.visits} visits</span></td>
-                    <td class="p-2.5"><button class="text-blue-600 dark:text-blue-400 hover:underline">Select</button></td>
+                    <td class="p-2.5"><button class="text-blue-600 dark:text-blue-400 hover:underline">Select</button> </td>
                 </tr>
             `).join('');
         }

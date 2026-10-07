@@ -38,6 +38,28 @@
       <span class="text-xs bg-blue-200 px-2 py-0.5 rounded text-blue-900 font-semibold" id="role-badge">Full Superuser Permissions</span>
     </div>
 
+    <!-- SHARED MEDICAL HISTORY SEARCH PANEL (Visible to Admin, Nurse, Lab Tech) -->
+    <section id="shared-history-panel" class="bg-slate-800 text-white p-5 rounded-xl shadow-md space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700 pb-3">
+        <div>
+          <h2 class="text-base font-bold flex items-center gap-2 text-blue-300">
+            <span>📜 Patient Medical & Financial History Lookup</span>
+          </h2>
+          <p class="text-xs text-slate-400">Accessible by Admin, Nurse, and Lab Technician</p>
+        </div>
+        <div class="flex gap-2">
+          <select id="history-patient-select" class="bg-slate-900 text-white text-xs border border-slate-700 p-2 rounded-lg outline-none min-w-[200px]">
+            <option value="">-- Select Patient to View History --</option>
+          </select>
+          <button onclick="renderMedicalHistory()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold transition">Load Records</button>
+        </div>
+      </div>
+
+      <div id="history-display-area" class="text-sm min-h-[60px] flex items-center justify-center text-slate-400 italic">
+        Select a patient above to inspect past visit dates, diagnostic timestamps, lab entries, and total charges.
+      </div>
+    </section>
+
     <!-- REGISTRATION OFFICER MODULE -->
     <section id="module-reception" class="role-module bg-white p-6 rounded-xl shadow-sm space-y-6">
       <h2 class="text-lg font-bold text-slate-800 border-b pb-2 flex items-center justify-between">
@@ -277,7 +299,6 @@
 
   <!-- JavaScript Engine -->
   <script>
-    // State initialization with localStorage persistent database fallback
     let db = {
       patients: JSON.parse(localStorage.getItem('nc_patients')) || [],
       staff: JSON.parse(localStorage.getItem('nc_staff')) || [
@@ -312,6 +333,13 @@
       const modules = document.querySelectorAll('.role-module');
       const titleDisplay = document.getElementById('role-title-display');
       const badge = document.getElementById('role-badge');
+      const historyPanel = document.getElementById('shared-history-panel');
+
+      if (role === 'reception') {
+        historyPanel.classList.add('hidden');
+      } else {
+        historyPanel.classList.remove('hidden');
+      }
 
       if (role === 'admin') {
         modules.forEach(m => m.classList.remove('hidden'));
@@ -341,6 +369,10 @@
       const phone = document.getElementById('reg-phone').value;
       const age = document.getElementById('reg-age').value;
 
+      const now = new Date();
+      const visitDate = now.toLocaleDateString();
+      const visitTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
       const existingVisits = db.patients.filter(p => p.phone === phone).length;
       const queueNo = db.patients.length + 101;
 
@@ -351,10 +383,13 @@
         age,
         queueNo,
         visitCount: existingVisits + 1,
-        date: new Date().toLocaleDateString(),
+        date: visitDate,
+        time: visitTime,
+        diagnosedTime: 'Not Diagnosed Yet',
         symptoms: '',
         diagnosis: '',
         dispensedMed: '',
+        amountCharged: 0,
         labStatus: 'None'
       });
 
@@ -382,7 +417,60 @@
           <p class="font-bold text-slate-800">${latest.name} (${latest.age} yrs)</p>
           <p class="text-xs text-slate-500">Phone: ${latest.phone}</p>
           <p class="text-xs text-blue-900 font-semibold">Total System Visits: ${matches.length} Visit(s)</p>
-          <p class="text-xs text-slate-600">Last Visit Date: ${latest.date}</p>
+          <p class="text-xs text-slate-600">Last Visit Date: ${latest.date} at ${latest.time}</p>
+        </div>
+      `;
+    }
+
+    // MEDICAL HISTORY RENDERER
+    function renderMedicalHistory() {
+      const select = document.getElementById('history-patient-select');
+      const phone = select.value;
+      const display = document.getElementById('history-display-area');
+
+      if (!phone) {
+        display.innerHTML = '<span class="text-slate-400 italic">Select a patient above to inspect past visit dates, diagnostic timestamps, lab entries, and total charges.</span>';
+        return;
+      }
+
+      const records = db.patients.filter(p => p.phone === phone);
+      if (records.length === 0) {
+        display.innerHTML = '<span class="text-rose-400 italic">No history found for this patient.</span>';
+        return;
+      }
+
+      display.innerHTML = `
+        <div class="w-full space-y-3 text-left">
+          <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+            <h3 class="font-bold text-blue-300 text-base">${records[0].name} <span class="text-xs text-slate-400">(${records[0].phone})</span></h3>
+            <span class="text-xs bg-blue-900 text-blue-200 px-2.5 py-1 rounded font-bold">${records.length} Total Visit(s)</span>
+          </div>
+
+          <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+            ${records.map(r => {
+              const lab = db.labInquiries.find(l => l.patientId === r.id);
+              return `
+                <div class="bg-slate-900 p-3.5 rounded-lg border border-slate-700 space-y-2 text-xs">
+                  <div class="flex justify-between items-center text-slate-300 border-b border-slate-800 pb-1.5">
+                    <span><strong>Visit Date:</strong> ${r.date} (${r.time})</span>
+                    <span class="text-emerald-400 font-bold">Total Charged: KES ${r.amountCharged}</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+                    <div>
+                      <p><strong>Diagnosis Time:</strong> ${r.diagnosedTime || 'N/A'}</p>
+                      <p><strong>Symptoms:</strong> ${r.symptoms || 'None recorded'}</p>
+                      <p><strong>Diagnosis:</strong> ${r.diagnosis || 'Pending'}</p>
+                    </div>
+                    <div>
+                      <p><strong>Dispensed Med:</strong> ${r.dispensedMed || 'None'}</p>
+                      <p><strong>Lab Inquiry:</strong> ${lab ? lab.testRequested : 'No Lab Ordered'}</p>
+                      <p><strong>Lab Results:</strong> ${lab && lab.results ? lab.results : (lab ? 'Pending' : 'N/A')}</p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
         </div>
       `;
     }
@@ -413,8 +501,10 @@
       const patient = db.patients.find(p => p.id === patientId);
       if (!patient) return;
 
+      const now = new Date();
       patient.symptoms = symptoms;
       patient.diagnosis = diagnosis;
+      patient.diagnosedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       // Handle Lab Inquiry Requisition
       if (reqLab && labTestName) {
@@ -434,8 +524,10 @@
         const med = db.inventory[selectedMedIndex];
         if (med && med.stock > 0) {
           med.stock -= 1;
-          db.revenue += parseFloat(med.price);
+          const price = parseFloat(med.price);
+          db.revenue += price;
           patient.dispensedMed = med.name;
+          patient.amountCharged = (patient.amountCharged || 0) + price;
         } else {
           alert('Selected medicine is out of stock!');
         }
@@ -517,6 +609,20 @@
 
     // RENDER ENGINE
     function renderAll() {
+      // Render Shared Medical History Dropdown
+      const historySelect = document.getElementById('history-patient-select');
+      const uniquePatients = [];
+      const seenPhones = new Set();
+      db.patients.forEach(p => {
+        if (!seenPhones.has(p.phone)) {
+          seenPhones.add(p.phone);
+          uniquePatients.push(p);
+        }
+      });
+      
+      historySelect.innerHTML = '<option value="">-- Select Patient to View History --</option>' +
+        uniquePatients.map(p => `<option value="${p.phone}">${p.name} (${p.phone})</option>`).join('');
+
       // Render Reception Queue
       const queueList = document.getElementById('queue-list');
       if (db.patients.length === 0) {
@@ -526,7 +632,7 @@
           <li class="py-2 flex justify-between items-center">
             <div>
               <p class="font-bold text-slate-800">${p.name} <span class="text-xs text-blue-900">(${p.phone})</span></p>
-              <p class="text-xs text-slate-500">Visits: ${p.visitCount} | Age: ${p.age}</p>
+              <p class="text-xs text-slate-500">Visits: ${p.visitCount} | ${p.date} ${p.time}</p>
             </div>
             <span class="text-xs bg-blue-100 text-blue-900 px-2 py-1 rounded font-bold">Queue #${p.queueNo}</span>
           </li>

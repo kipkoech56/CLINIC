@@ -3,333 +3,821 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulsePoint - Hospital Management System Dashboard</title>
+    <title>Nevada — Care & Health System</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        :root {
-            --sidebar-bg: #1c273c;
-            --sidebar-active: #1565c0;
-            --body-bg: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #6c757d;
-            --border-color: #e0e0e0;
-            --primary-blue: #1976d2;
-            --accent-green: #2e7d32;
-            --accent-orange: #ed6c02;
-            --accent-red: #d32f2f;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            display: flex;
-            background-color: var(--body-bg);
-            color: var(--text-main);
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styling */
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar-bg);
+        .sidebar-link.active {
+            background-color: #1e293b;
+            border-left: 4px solid #3b82f6;
             color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .brand {
-            padding: 20px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #ff4d4d;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .nav-menu {
-            list-style: none;
-            padding: 10px 0;
-            overflow-y: auto;
-        }
-
-        .nav-section-title {
-            padding: 12px 20px 6px 20px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #8a99ad;
-        }
-
-        .nav-item a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: #c2c9d6;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: background 0.2s;
-        }
-
-        .nav-item a:hover, .nav-item.active > a {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-        }
-
-        .nav-item.active > a {
-            background-color: var(--sidebar-active);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        /* Header */
-        .header {
-            background-color: var(--card-bg);
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 0 30px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        .avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: var(--sidebar-bg);
-        }
-
-        /* Container & Grid */
-        .dashboard-container {
-            padding: 30px;
-        }
-
-        .welcome-header {
-            margin-bottom: 25px;
-        }
-
-        .welcome-header h1 {
-            font-size: 1.6rem;
-            margin-bottom: 5px;
-        }
-
-        .welcome-header p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .metric-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            border-top: 4px solid var(--primary-blue);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .metric-title {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .metric-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .metric-subtext {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .trend-up { color: var(--accent-green); }
-        .trend-down { color: var(--accent-red); }
-
-        /* Charts Section */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-        }
-
-        .chart-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .chart-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        .chart-placeholder {
-            height: 250px;
-            display: flex;
-            align-items: flex-end;
-            gap: 20px;
-            padding-top: 20px;
-            border-bottom: 1px solid var(--border-color);
-            border-left: 1px solid var(--border-color);
-        }
-
-        .bar {
-            flex: 1;
-            background-color: var(--primary-blue);
-            border-radius: 4px 4px 0 0;
-            transition: height 0.3s;
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-100 font-sans antialiased text-slate-800">
 
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-        <div class="brand">
-            ❤️ PulsePoint[span_0](start_span)[span_0](end_span)
-        </div>
-        <ul class="nav-menu">
-            <li class="nav-item active">
-                <a href="#">Dashboard[span_1](start_span)[span_1](end_span)</a>
-            </li>
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0">
+            <div>
+                <!-- Brand Header -->
+                <div class="p-4 border-b border-slate-800 flex items-center space-x-3">
+                    <div class="p-2 bg-blue-600 rounded-lg text-white">
+                        <i class="fa-solid fa-hospital-user text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-white leading-tight">Nevada</h1>
+                        <p class="text-xs text-slate-400">Care & Health System</p>
+                    </div>
+                </div>
+
+                <!-- Current User Info -->
+                <div class="p-4 border-b border-slate-800 bg-slate-950/40">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs" id="user-avatar-text">
+                            AD
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-xs font-semibold text-slate-200 truncate" id="user-email-display">admin@clinic.com</p>
+                            <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20" id="user-role-badge">Admin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Role Switcher -->
+                <div class="p-4 border-b border-slate-800">
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Simulate Role</label>
+                    <select id="role-switcher" onchange="switchRole(this.value)" class="w-full bg-slate-800 border border-slate-700 text-xs text-slate-200 rounded p-2 focus:ring-1 focus:ring-blue-500 outline-none">
+                        <option value="admin">Administrator (All Access)</option>
+                        <option value="reg">Registration Staff</option>
+                        <option value="nurse">Nurse / Clinical</option>
+                        <option value="lab">Lab Technician</option>
+                    </select>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="p-2 space-y-1">
+                    <button onclick="showTab('dashboard')" class="sidebar-link active w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors hover:bg-slate-800">
+                        <i class="fa-solid fa-chart-line w-4 text-center"></i>
+                        <span>Dashboard</span>
+                    </button>
+
+                    <button onclick="showTab('registration')" class="sidebar-link w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors hover:bg-slate-800">
+                        <i class="fa-solid fa-id-card w-4 text-center"></i>
+                        <span>Patient Intake</span>
+                    </button>
+
+                    <button onclick="showTab('consultation')" class="sidebar-link w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors hover:bg-slate-800">
+                        <i class="fa-solid fa-stethoscope w-4 text-center"></i>
+                        <span>Clinical Consult</span>
+                    </button>
+
+                    <button onclick="showTab('lab')" class="sidebar-link w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors hover:bg-slate-800">
+                        <i class="fa-solid fa-vials w-4 text-center"></i>
+                        <span>Laboratory Queue</span>
+                    </button>
+
+                    <button onclick="showTab('inventory')" class="sidebar-link w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors hover:bg-slate-800">
+                        <i class="fa-solid fa-pills w-4 text-center"></i>
+                        <span>Pharmacy Stock</span>
+                    </button>
+
+                    <button id="nav-finance" onclick="showTab('finance')" class="sidebar-link w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors hover:bg-slate-800">
+                        <i class="fa-solid fa-coins w-4 text-center"></i>
+                        <span>Financial Overview</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500">
+                Nevada Health Systems v2.4 (KE)
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
             
-            <li class="nav-section-title">PATIENT MANAGEMENT[span_2](start_span)[span_2](end_span)</li>
-            <li class="nav-item"><a href="#">+ Patient Registration[span_3](start_span)[span_3](end_span)</a></li>
-            <li class="nav-item"><a href="#">Outpatient[span_4](start_span)[span_4](end_span)</a></li>
-            <li class="nav-item"><a href="#">Inpatient[span_5](start_span)[span_5](end_span)</a></li>
-            <li class="nav-item"><a href="#">Clinics Management[span_6](start_span)[span_6](end_span)</a></li>
-            <li class="nav-item"><a href="#">Patient Management[span_7](start_span)[span_7](end_span)</a></li>
-
-            <li class="nav-section-title">HOSPITAL SERVICES[span_8](start_span)[span_8](end_span)</li>
-            <li class="nav-item"><a href="#">Accounts & Finance[span_9](start_span)[span_9](end_span)</a></li>
-            <li class="nav-item"><a href="#">Security Management[span_10](start_span)[span_10](end_span)</a></li>
-            <li class="nav-item"><a href="#">Administrative Tools[span_11](start_span)[span_11](end_span)</a></li>
-        </ul>
-    </aside>
-
-    <!-- Main Section -->
-    <main class="main-content">
-        <!-- Top Header Bar -->
-        <header class="header">
-            <div class="user-profile">
-                <div class="avatar">MT</div>
-                <span>Dr. Mutethia Tonny</span>[span_12](start_span)[span_12](end_span)[span_13](start_span)[span_13](end_span)
-            </div>
-        </header>
-
-        <!-- Main Dashboard View -->
-        <div class="dashboard-container">
-            <div class="welcome-header">
-                <h1>Dashboard</h1>[span_14](start_span)[span_14](end_span)
-                <p>Welcome back, Dr. Mutethia. Here's your hospital overview for today.</p>[span_15](start_span)[span_15](end_span)
-            </div>
-
-            <!-- Key Metrics Grid -->
-            <div class="metrics-grid">
-                <div class="metric-card" style="border-top-color: #1976d2;">
-                    <div class="metric-title">Patients</div>[span_16](start_span)[span_16](end_span)
-                    <div class="metric-value">2,560</div>[span_17](start_span)[span_17](end_span)
-                    <div class="metric-subtext">Total Registered Patients</div>[span_18](start_span)[span_18](end_span)
-                    <div class="metric-subtext trend-up">↑ 3.2% vs last month</div>[span_19](start_span)[span_19](end_span)
+            <!-- Top Header -->
+            <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800" id="current-view-title">Clinic Dashboard</h2>
                 </div>
-
-                <div class="metric-card" style="border-top-color: #ed6c02;">
-                    <div class="metric-title">Occupancy</div>[span_20](start_span)[span_20](end_span)
-                    <div class="metric-value">73%</div>[span_21](start_span)[span_21](end_span)
-                    <div class="metric-subtext">Current Bed Occupancy Rate</div>[span_22](start_span)[span_22](end_span)
-                    <div class="metric-subtext trend-down">↓ 1.5% vs last week</div>[span_23](start_span)[span_23](end_span)
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 text-xs text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Database Engine: Active (SQLite Simulation)</span>
+                    </div>
+                    <div class="text-right text-xs text-slate-500">
+                        <div id="live-clock" class="font-medium text-slate-700">12:00:00 PM</div>
+                        <div>October 2026</div>
+                    </div>
                 </div>
+            </header>
 
-                <div class="metric-card" style="border-top-color: #9c27b0;">
-                    <div class="metric-title">Waiting</div>[span_24](start_span)[span_24](end_span)
-                    <div class="metric-value">6</div>[span_25](start_span)[span_25](end_span)
-                    <div class="metric-subtext">Patients in Queue</div>[span_26](start_span)[span_26](end_span)
-                    <div class="metric-subtext trend-down">↓ 4.8% vs yesterday</div>[span_27](start_span)[span_27](end_span)
-                </div>
+            <!-- TAB CONTENTS CONTAINER -->
+            <div class="p-6 space-y-6">
 
-                <div class="metric-card" style="border-top-color: #2e7d32;">
-                    <div class="metric-title">Appointments</div>[span_28](start_span)[span_28](end_span)
-                    <div class="metric-value">42</div>[span_29](start_span)[span_29](end_span)
-                    <div class="metric-subtext">Today's Scheduled Appointments</div>[span_30](start_span)[span_30](end_span)
-                    <div class="metric-subtext trend-up">↑ 12% vs last week</div>[span_31](start_span)[span_31](end_span)
-                </div>
+                <!-- 1. DASHBOARD TAB -->
+                <div id="tab-dashboard" class="tab-content">
+                    
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-500 font-medium">Total Registered</p>
+                                <h3 class="text-2xl font-bold text-slate-800 mt-1" id="kpi-patients-count">0</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-user-check text-emerald-500"></i> Patients System</p>
+                            </div>
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-users text-lg"></i></div>
+                        </div>
 
-                <div class="metric-card" style="border-top-color: #0288d1;">
-                    <div class="metric-title">Insurance Revenue</div>[span_32](start_span)[span_32](end_span)
-                    <div class="metric-value">KES 1,128,450</div>[span_33](start_span)[span_33](end_span)
-                    <div class="metric-subtext">Monthly Insurance Claims</div>[span_34](start_span)[span_34](end_span)
-                    <div class="metric-subtext trend-up">↑ 8.3% vs last month</div>[span_35](start_span)[span_35](end_span)
-                </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-500 font-medium">Encounters Today</p>
+                                <h3 class="text-2xl font-bold text-slate-800 mt-1" id="kpi-encounters-count">0</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-hospital-user text-blue-500"></i> Active visits</p>
+                            </div>
+                            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-notes-medical text-lg"></i></div>
+                        </div>
 
-                <div class="metric-card" style="border-top-color: #388e3c;">
-                    <div class="metric-title">Cash Revenue</div>[span_36](start_span)[span_36](end_span)
-                    <div class="metric-value">KES 3,342,875</div>[span_37](start_span)[span_37](end_span)
-                    <div class="metric-subtext">Monthly Cash Payments</div>[span_38](start_span)[span_38](end_span)
-                    <div class="metric-subtext trend-up">↑ 5.7% vs last month</div>[span_39](start_span)[span_39](end_span)
-                </div>
-            </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-500 font-medium">Pending Lab Tests</p>
+                                <h3 class="text-2xl font-bold text-slate-800 mt-1" id="kpi-lab-count">0</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-clock text-amber-500"></i> Action required</p>
+                            </div>
+                            <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-flask text-lg"></i></div>
+                        </div>
 
-            <!-- Charts Section -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h3>Patient Admission Trends</h3>[span_40](start_span)[span_40](end_span)
-                    <div class="chart-placeholder">
-                        <div class="bar" style="height: 60%;" title="Jan"></div>
-                        <div class="bar" style="height: 55%;" title="Feb"></div>
-                        <div class="bar" style="height: 75%;" title="Mar"></div>
-                        <div class="bar" style="height: 70%;" title="Apr"></div>
-                        <div class="bar" style="height: 65%;" title="May"></div>
-                        <div class="bar" style="height: 80%;" title="Jun"></div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-500 font-medium">Net Revenue</p>
+                                <h3 class="text-2xl font-bold text-slate-800 mt-1" id="kpi-revenue-display">KSh 0.00</h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Pharmacy & Services</p>
+                            </div>
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i class="fa-solid fa-wallet text-lg"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- Operational Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3">Quick Operational Actions</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <button onclick="showTab('registration')" class="p-3 border border-slate-200 rounded-lg text-left hover:border-blue-500 hover:bg-blue-50/50 transition">
+                                    <i class="fa-solid fa-user-plus text-blue-600 mb-1 block"></i>
+                                    <span class="text-xs font-semibold text-slate-700">Register Patient</span>
+                                </button>
+                                <button onclick="showTab('consultation')" class="p-3 border border-slate-200 rounded-lg text-left hover:border-emerald-500 hover:bg-emerald-50/50 transition">
+                                    <i class="fa-solid fa-user-doctor text-emerald-600 mb-1 block"></i>
+                                    <span class="text-xs font-semibold text-slate-700">New Consultation</span>
+                                </button>
+                                <button onclick="showTab('lab')" class="p-3 border border-slate-200 rounded-lg text-left hover:border-amber-500 hover:bg-amber-50/50 transition">
+                                    <i class="fa-solid fa-microscope text-amber-600 mb-1 block"></i>
+                                    <span class="text-xs font-semibold text-slate-700">Lab Orders</span>
+                                </button>
+                                <button onclick="showTab('inventory')" class="p-3 border border-slate-200 rounded-lg text-left hover:border-purple-500 hover:bg-purple-50/50 transition">
+                                    <i class="fa-solid fa-boxes-packing text-purple-600 mb-1 block"></i>
+                                    <span class="text-xs font-semibold text-slate-700">Stock Inventory</span>
+                                </button>
+                            </div>
+
+                            <div class="mt-6">
+                                <h4 class="text-xs font-bold text-slate-700 mb-2">Recent Encounters Table</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs border-collapse">
+                                        <thead>
+                                            <tr class="bg-slate-50 border-y border-slate-200 text-slate-500">
+                                                <th class="p-2">Enc ID</th>
+                                                <th class="p-2">Patient</th>
+                                                <th class="p-2">Vitals / Status</th>
+                                                <th class="p-2">Diagnosis</th>
+                                                <th class="p-2">Cost (KSh)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dashboard-encounters-list">
+                                            <tr><td colspan="5" class="p-4 text-center text-slate-400">No active encounters recorded</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Permissions Card -->
+                        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3">Nevada Role Permissions</h3>
+                            <div class="space-y-3 text-xs">
+                                <div class="p-2 bg-slate-50 rounded border border-slate-200">
+                                    <p class="font-bold text-slate-700"><span class="w-2 h-2 inline-block rounded-full bg-blue-500 mr-1"></span> Administrator</p>
+                                    <p class="text-slate-500 text-[11px] mt-0.5">Full operational access, stock restock, system financial charts, and role settings.</p>
+                                </div>
+                                <div class="p-2 bg-slate-50 rounded border border-slate-200">
+                                    <p class="font-bold text-slate-700"><span class="w-2 h-2 inline-block rounded-full bg-emerald-500 mr-1"></span> Registration Staff</p>
+                                    <p class="text-slate-500 text-[11px] mt-0.5">Register new patients, verify phone numbers, search repeat visit history.</p>
+                                </div>
+                                <div class="p-2 bg-slate-50 rounded border border-slate-200">
+                                    <p class="font-bold text-slate-700"><span class="w-2 h-2 inline-block rounded-full bg-amber-500 mr-1"></span> Nurse / Clinician</p>
+                                    <p class="text-slate-500 text-[11px] mt-0.5">Record vitals, diagnosis, prescribe medicines, and submit lab requests.</p>
+                                </div>
+                                <div class="p-2 bg-slate-50 rounded border border-slate-200">
+                                    <p class="font-bold text-slate-700"><span class="w-2 h-2 inline-block rounded-full bg-purple-500 mr-1"></span> Lab Technician</p>
+                                    <p class="text-slate-500 text-[11px] mt-0.5">Review pending lab requests and input diagnostic laboratory test results.</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="chart-card">
-                    <h3>Department Distribution</h3>[span_41](start_span)[span_41](end_span)[span_42](start_span)[span_42](end_span)
-                    <div style="text-align: center; padding: 40px 0; color: var(--text-muted);">
-                        [ Donut Chart Visualization ][span_43](start_span)[span_43](end_span)
+                <!-- 2. PATIENT INTAKE TAB -->
+                <div id="tab-registration" class="tab-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- Form -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2">New Patient Intake</h3>
+                            <form id="form-patient-registration" onsubmit="handlePatientRegistration(event)" class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Full Name</label>
+                                    <input type="text" id="reg-name" required class="w-full border border-slate-300 p-2 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="e.g. Kipkoech Chepkwony">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Phone Number</label>
+                                    <input type="tel" id="reg-phone" required class="w-full border border-slate-300 p-2 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="e.g. 0712345678">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Age / Gender</label>
+                                    <div class="flex space-x-2">
+                                        <input type="number" id="reg-age" placeholder="Age" required class="w-1/2 border border-slate-300 p-2 rounded outline-none">
+                                        <select id="reg-gender" class="w-1/2 border border-slate-300 p-2 rounded outline-none">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2.5 rounded transition">Register Patient</button>
+                            </form>
+                        </div>
+
+                        <!-- Directory -->
+                        <div class="md:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 mb-3">Registered Patient Directory</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-y border-slate-200 text-slate-500">
+                                            <th class="p-2">Patient No.</th>
+                                            <th class="p-2">Full Name</th>
+                                            <th class="p-2">Phone</th>
+                                            <th class="p-2">Visits</th>
+                                            <th class="p-2">Registered At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="patient-directory-list">
+                                        <tr><td colspan="5" class="p-4 text-center text-slate-400">No patients registered yet.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
 
+                <!-- 3. CLINICAL CONSULTATION TAB -->
+                <div id="tab-consultation" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2">Clinical Consultation Form</h3>
+                            <form id="form-encounter" onsubmit="handleNewEncounter(event)" class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Select Patient</label>
+                                    <select id="enc-patient-select" required class="w-full border border-slate-300 p-2 rounded outline-none">
+                                        <option value="">-- Choose Patient --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Vitals (BP / Temp / Weight)</label>
+                                    <input type="text" id="enc-vitals" placeholder="120/80 mmHg, 37.0°C, 70kg" class="w-full border border-slate-300 p-2 rounded outline-none">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Consultation Fee (KSh)</label>
+                                    <input type="number" id="enc-fee" value="500" required class="w-full border border-slate-300 p-2 rounded outline-none">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Diagnosis Notes</label>
+                                    <textarea id="enc-diagnosis" rows="2" class="w-full border border-slate-300 p-2 rounded outline-none" placeholder="Clinical notes & symptoms..."></textarea>
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Lab Request (Optional)</label>
+                                    <input type="text" id="enc-lab-request" placeholder="e.g. Full Blood Count / Malaria Test" class="w-full border border-slate-300 p-2 rounded outline-none">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Prescription Fee (KSh)</label>
+                                    <input type="number" id="enc-rx-cost" value="0" class="w-full border border-slate-300 p-2 rounded outline-none">
+                                </div>
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold p-2.5 rounded transition">Save Consultation Record</button>
+                            </form>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 mb-3">Encounters & Medical History</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-y border-slate-200 text-slate-500">
+                                            <th class="p-2">Enc ID</th>
+                                            <th class="p-2">Patient</th>
+                                            <th class="p-2">Vitals</th>
+                                            <th class="p-2">Lab Status</th>
+                                            <th class="p-2">Diagnosis</th>
+                                            <th class="p-2">Total (KSh)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="encounters-table-body">
+                                        <tr><td colspan="6" class="p-4 text-center text-slate-400">No consultation records.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 4. LABORATORY QUEUE TAB -->
+                <div id="tab-lab" class="tab-content hidden">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <h3 class="font-bold text-sm text-slate-800">Laboratory Testing Center</h3>
+                            <span class="text-xs font-semibold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200">Lab Technician View</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-y border-slate-200 text-slate-500">
+                                        <th class="p-2">Enc ID</th>
+                                        <th class="p-2">Patient</th>
+                                        <th class="p-2">Requested Test</th>
+                                        <th class="p-2">Status</th>
+                                        <th class="p-2">Lab Result Record</th>
+                                        <th class="p-2">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lab-queue-table-body">
+                                    <tr><td colspan="6" class="p-4 text-center text-slate-400">No pending lab orders in queue.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. PHARMACY STOCK TAB -->
+                <div id="tab-inventory" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2">Restock / Add Item</h3>
+                            <form id="form-inventory" onsubmit="handleInventoryAdd(event)" class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Medicine Name</label>
+                                    <input type="text" id="inv-name" required class="w-full border border-slate-300 p-2 rounded outline-none" placeholder="e.g. Paracetamol 500mg">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Stock Quantity</label>
+                                    <input type="number" id="inv-qty" required class="w-full border border-slate-300 p-2 rounded outline-none" placeholder="100">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Cost Price (KSh)</label>
+                                    <input type="number" id="inv-cost" required class="w-full border border-slate-300 p-2 rounded outline-none" placeholder="50">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1">Selling Price (KSh)</label>
+                                    <input type="number" id="inv-price" required class="w-full border border-slate-300 p-2 rounded outline-none" placeholder="100">
+                                </div>
+                                <button type="submit" id="btn-inventory-submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold p-2.5 rounded transition">Add Stock Inventory</button>
+                            </form>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 mb-3">Pharmacy Inventory Stock</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-y border-slate-200 text-slate-500">
+                                            <th class="p-2">Medicine Item</th>
+                                            <th class="p-2">In Stock</th>
+                                            <th class="p-2">Cost Price (KSh)</th>
+                                            <th class="p-2">Selling Price (KSh)</th>
+                                            <th class="p-2">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inventory-table-body">
+                                        <tr><td colspan="5" class="p-4 text-center text-slate-400">Pharmacy stock is empty.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 6. FINANCIAL OVERVIEW TAB -->
+                <div id="tab-finance" class="tab-content hidden space-y-6">
+                    
+                    <!-- Financial Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <p class="text-xs text-slate-500 font-medium">Total Gross Revenue</p>
+                            <h3 class="text-2xl font-bold text-emerald-600 mt-1" id="total-revenue-display">KSh 0.00</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Consultations, Lab & Rx Sales</p>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <p class="text-xs text-slate-500 font-medium">Stock Purchases / Expenditure</p>
+                            <h3 class="text-2xl font-bold text-red-600 mt-1" id="total-expenditure-display">KSh 0.00</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Pharmacy inventory restock cost</p>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <p class="text-xs text-slate-500 font-medium">Calculated Net Profit</p>
+                            <h3 class="text-2xl font-bold text-blue-600 mt-1" id="net-profit-display">KSh 0.00</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Revenue minus Stock Cost</p>
+                        </div>
+                    </div>
+
+                    <!-- Chart & Analytics -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3">Financial Performance Chart (KSh)</h3>
+                        <div class="h-64 relative">
+                            <canvas id="financialOverviewCanvas"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT ENGINE -->
+    <script>
+        // GLOBAL STATE SIMULATION
+        let state = {
+            role: 'admin',
+            patients: [],
+            encounters: [],
+            inventory: [
+                { id: 1, name: 'Amoxicillin 500mg', qty: 150, cost: 200, price: 350 },
+                { id: 2, name: 'Paracetamol 500mg', qty: 300, cost: 10, price: 30 },
+                { id: 3, name: 'Artemether/Lumefantrine (Coartem)', qty: 80, cost: 300, price: 600 }
+            ]
+        };
+
+        // INITIALIZATION
+        document.addEventListener('DOMContentLoaded', () => {
+            startClock();
+            renderAll();
+        });
+
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+            }, 1000);
+        }
+
+        // CURRENCY FORMATTER
+        function formatKSh(amount) {
+            return 'KSh ' + Number(amount).toLocaleString('en-KE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // ROLE SWITCHING & PERMISSIONS
+        function switchRole(role) {
+            state.role = role;
+            const badge = document.getElementById('user-role-badge');
+            const email = document.getElementById('user-email-display');
+            const avatar = document.getElementById('user-avatar-text');
+            const financeNav = document.getElementById('nav-finance');
+            const invSubmitBtn = document.getElementById('btn-inventory-submit');
+
+            const roles = {
+                admin: { title: 'Admin', email: 'admin@clinic.com', avatar: 'AD' },
+                reg: { title: 'Registration Staff', email: 'reg@clinic.com', avatar: 'RG' },
+                nurse: { title: 'Nurse / Clinical', email: 'nurse@clinic.com', avatar: 'NR' },
+                lab: { title: 'Lab Technician', email: 'lab@clinic.com', avatar: 'LB' }
+            };
+
+            badge.innerText = roles[role].title;
+            email.innerText = roles[role].email;
+            avatar.innerText = roles[role].avatar;
+
+            // Restrict Financial Access to Admin
+            if (role !== 'admin') {
+                financeNav.classList.add('hidden');
+                invSubmitBtn.disabled = true;
+                invSubmitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                financeNav.classList.remove('hidden');
+                invSubmitBtn.disabled = false;
+                invSubmitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // TAB SWITCHING
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            event.currentTarget.classList.add('active');
+
+            const titles = {
+                dashboard: 'Clinic Dashboard',
+                registration: 'Patient Intake & Registration',
+                consultation: 'Clinical Consultation',
+                lab: 'Laboratory Testing Center',
+                inventory: 'Pharmacy Stock & Inventory',
+                finance: 'Financial Overview & Profit Analytics'
+            };
+            document.getElementById('current-view-title').innerText = titles[tabId] || 'Clinic Dashboard';
+
+            if (tabId === 'finance') {
+                renderChart();
+            }
+        }
+
+        // PATIENT REGISTRATION LOGIC
+        function handlePatientRegistration(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const phone = document.getElementById('reg-phone').value;
+            const age = document.getElementById('reg-age').value;
+            const gender = document.getElementById('reg-gender').value;
+
+            const newPatient = {
+                id: `PAT-${1000 + state.patients.length + 1}`,
+                name,
+                phone,
+                age,
+                gender,
+                visits: 1,
+                date: new Date().toLocaleDateString()
+            };
+
+            state.patients.push(newPatient);
+            document.getElementById('form-patient-registration').reset();
+            renderAll();
+        }
+
+        // ENCOUNTER CONSULTATION LOGIC
+        function handleNewEncounter(e) {
+            e.preventDefault();
+            const patientId = document.getElementById('enc-patient-select').value;
+            const patient = state.patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            const vitals = document.getElementById('enc-vitals').value;
+            const consultFee = parseFloat(document.getElementById('enc-fee').value) || 0;
+            const diagnosis = document.getElementById('enc-diagnosis').value;
+            const labRequest = document.getElementById('enc-lab-request').value;
+            const rxCost = parseFloat(document.getElementById('enc-rx-cost').value) || 0;
+
+            const newEncounter = {
+                id: `ENC-${2000 + state.encounters.length + 1}`,
+                patientName: patient.name,
+                patientId: patient.id,
+                vitals: vitals || 'N/A',
+                consultFee,
+                diagnosis: diagnosis || 'General checkup',
+                labRequest: labRequest || null,
+                labStatus: labRequest ? 'Pending' : 'N/A',
+                labResult: '',
+                rxCost
+            };
+
+            state.encounters.push(newEncounter);
+            document.getElementById('form-encounter').reset();
+            renderAll();
+        }
+
+        // LAB RESULT SUBMISSION LOGIC
+        function submitLabResult(encId) {
+            const input = document.getElementById(`lab-input-${encId}`);
+            const encounter = state.encounters.find(e => e.id === encId);
+            if (encounter && input) {
+                encounter.labResult = input.value;
+                encounter.labStatus = 'Completed';
+                renderAll();
+            }
+        }
+
+        // INVENTORY STOCK ADD LOGIC
+        function handleInventoryAdd(e) {
+            e.preventDefault();
+            if (state.role !== 'admin') {
+                alert('Only Administrators can modify inventory stock!');
+                return;
+            }
+
+            const name = document.getElementById('inv-name').value;
+            const qty = parseInt(document.getElementById('inv-qty').value) || 0;
+            const cost = parseFloat(document.getElementById('inv-cost').value) || 0;
+            const price = parseFloat(document.getElementById('inv-price').value) || 0;
+
+            state.inventory.push({
+                id: state.inventory.length + 1,
+                name,
+                qty,
+                cost,
+                price
+            });
+
+            document.getElementById('form-inventory').reset();
+            renderAll();
+        }
+
+        // FINANCIAL CALCULATIONS ENGINE
+        function calculateFinancials() {
+            const grossRevenue = state.encounters.reduce((sum, enc) => sum + enc.consultFee + enc.rxCost, 0);
+            const stockExpenditure = state.inventory.reduce((sum, item) => sum + (item.cost * item.qty), 0);
+            const netProfit = grossRevenue - stockExpenditure;
+
+            return { grossRevenue, stockExpenditure, netProfit };
+        }
+
+        // RENDER FUNCTIONS
+        function renderAll() {
+            // KPIs
+            const fin = calculateFinancials();
+            document.getElementById('kpi-patients-count').innerText = state.patients.length;
+            document.getElementById('kpi-encounters-count').innerText = state.encounters.length;
+            document.getElementById('kpi-lab-count').innerText = state.encounters.filter(e => e.labStatus === 'Pending').length;
+            document.getElementById('kpi-revenue-display').innerText = formatKSh(fin.netProfit);
+
+            // Financial Tab Summary
+            document.getElementById('total-revenue-display').innerText = formatKSh(fin.grossRevenue);
+            document.getElementById('total-expenditure-display').innerText = formatKSh(fin.stockExpenditure);
+            const netEl = document.getElementById('net-profit-display');
+            netEl.innerText = formatKSh(fin.netProfit);
+            netEl.className = fin.netProfit < 0 ? 'text-2xl font-bold text-red-600 mt-1' : 'text-2xl font-bold text-emerald-600 mt-1';
+
+            // Patient Select Options
+            const select = document.getElementById('enc-patient-select');
+            select.innerHTML = '<option value="">-- Choose Patient --</option>' + 
+                state.patients.map(p => `<option value="${p.id}">${p.name} (${p.id})</option>`).join('');
+
+            // Patient Directory
+            const patientTable = document.getElementById('patient-directory-list');
+            if (state.patients.length === 0) {
+                patientTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No patients registered yet.</td></tr>`;
+            } else {
+                patientTable.innerHTML = state.patients.map(p => `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="p-2 font-mono text-blue-600">${p.id}</td>
+                        <td class="p-2 font-semibold text-slate-700">${p.name}</td>
+                        <td class="p-2">${p.phone}</td>
+                        <td class="p-2">${p.visits}</td>
+                        <td class="p-2 text-slate-400">${p.date}</td>
+                    </tr>
+                `).join('');
+            }
+
+            // Encounters Table (Dashboard & Consultation View)
+            const encTable = document.getElementById('encounters-table-body');
+            const dashEncTable = document.getElementById('dashboard-encounters-list');
+            
+            if (state.encounters.length === 0) {
+                const emptyMsg = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No active consultation records.</td></tr>`;
+                encTable.innerHTML = emptyMsg;
+                dashEncTable.innerHTML = emptyMsg;
+            } else {
+                const rows = state.encounters.map(e => `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="p-2 font-mono text-blue-600">${e.id}</td>
+                        <td class="p-2 font-semibold text-slate-700">${e.patientName}</td>
+                        <td class="p-2">${e.vitals}</td>
+                        <td class="p-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] ${e.labStatus === 'Pending' ? 'bg-amber-100 text-amber-800' : e.labStatus === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'}">
+                                ${e.labStatus}
+                            </span>
+                        </td>
+                        <td class="p-2">${e.diagnosis}</td>
+                        <td class="p-2 font-semibold text-slate-800">${formatKSh(e.consultFee + e.rxCost)}</td>
+                    </tr>
+                `).join('');
+                encTable.innerHTML = rows;
+                dashEncTable.innerHTML = rows;
+            }
+
+            // Lab Queue
+            const labTable = document.getElementById('lab-queue-table-body');
+            const pendingLabs = state.encounters.filter(e => e.labRequest);
+            if (pendingLabs.length === 0) {
+                labTable.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No lab requests submitted yet.</td></tr>`;
+            } else {
+                labTable.innerHTML = pendingLabs.map(e => `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="p-2 font-mono text-blue-600">${e.id}</td>
+                        <td class="p-2 font-semibold text-slate-700">${e.patientName}</td>
+                        <td class="p-2 font-medium text-amber-700">${e.labRequest}</td>
+                        <td class="p-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] ${e.labStatus === 'Pending' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${e.labStatus}</span>
+                        </td>
+                        <td class="p-2">
+                            ${e.labStatus === 'Pending' 
+                                ? `<input type="text" id="lab-input-${e.id}" placeholder="Enter lab results..." class="border border-slate-300 p-1 rounded text-xs w-full">`
+                                : `<span class="text-slate-700 font-medium">${e.labResult}</span>`}
+                        </td>
+                        <td class="p-2">
+                            ${e.labStatus === 'Pending' 
+                                ? `<button onclick="submitLabResult('${e.id}')" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700">Save</button>`
+                                : `<i class="fa-solid fa-check text-emerald-500"></i>`}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Inventory Table
+            const invTable = document.getElementById('inventory-table-body');
+            invTable.innerHTML = state.inventory.map(item => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-2 font-semibold text-slate-700">${item.name}</td>
+                    <td class="p-2 font-mono">${item.qty} units</td>
+                    <td class="p-2 text-slate-600">${formatKSh(item.cost)}</td>
+                    <td class="p-2 font-medium text-slate-800">${formatKSh(item.price)}</td>
+                    <td class="p-2">
+                        <span class="px-2 py-0.5 rounded text-[10px] ${item.qty < 50 ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'}">
+                            ${item.qty < 50 ? 'Low Stock' : 'In Stock'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+
+            renderChart();
+        }
+
+        // CHART RENDERING
+        function renderChart() {
+            const canvas = document.getElementById('financialOverviewCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const fin = calculateFinancials();
+
+            if (window.nevadaChart) {
+                window.nevadaChart.destroy();
+            }
+
+            window.nevadaChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Gross Revenue', 'Stock Expenditures', 'Net Profit'],
+                    datasets: [{
+                        label: 'Amount in KSh',
+                        data: [fin.grossRevenue, fin.stockExpenditure, fin.netProfit],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.75)',
+                            'rgba(239, 68, 68, 0.75)',
+                            'rgba(59, 130, 246, 0.75)'
+                        ],
+                        borderColor: ['#10b981', '#ef4444', '#3b82f6'],
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` KSh ${ctx.raw.toLocaleString('en-KE')}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (val) => `KSh ${val.toLocaleString('en-KE')}`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>

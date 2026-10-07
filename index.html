@@ -3,180 +3,610 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nevada Clinic Medics</title>
+  <title>Nevada Clinic Management System</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans pb-12">
 
   <!-- Header -->
   <header class="bg-blue-900 text-white p-4 shadow-md">
-    <div class="max-w-4xl mx-auto flex justify-between items-center">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
       <div>
         <h1 class="text-xl font-bold tracking-wide">NEVADA CLINIC MEDICS</h1>
         <p class="text-xs text-blue-200">Location: Kipsuter | "We treat but God heals"</p>
       </div>
-      <span class="bg-emerald-500 text-xs px-2.5 py-1 rounded-full font-semibold">System Active</span>
+      
+      <!-- Role Selector -->
+      <div class="flex items-center gap-2 bg-blue-950 px-3 py-1.5 rounded-lg border border-blue-700">
+        <label for="role-select" class="text-xs font-semibold text-blue-200 uppercase">Active Role:</label>
+        <select id="role-select" onchange="switchRole(this.value)" class="bg-blue-900 text-white text-sm font-semibold rounded px-2 py-1 outline-none border border-blue-600">
+          <option value="admin">System Admin</option>
+          <option value="reception">Registration Officer</option>
+          <option value="nurse">Nurse</option>
+          <option value="lab">Lab Technician</option>
+        </select>
+      </div>
     </div>
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-4xl mx-auto p-4 space-y-6">
+  <main class="max-w-6xl mx-auto p-4 space-y-6">
 
-    <!-- Navigation Tabs -->
-    <div class="flex gap-2 border-b border-slate-300 pb-2 overflow-x-auto">
-      <button onclick="switchTab('patients')" id="tab-patients" class="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-900 text-white">Patients</button>
-      <button onclick="switchTab('lab')" id="tab-lab" class="px-4 py-2 text-sm font-semibold rounded-lg bg-white text-slate-700 hover:bg-slate-200">Lab Results</button>
-      <button onclick="switchTab('chemist')" id="tab-chemist" class="px-4 py-2 text-sm font-semibold rounded-lg bg-white text-slate-700 hover:bg-slate-200">Chemist / Billing</button>
-      <button onclick="switchTab('staff')" id="tab-staff" class="px-4 py-2 text-sm font-semibold rounded-lg bg-white text-slate-700 hover:bg-slate-200">Staff</button>
+    <!-- Active Role Notification Bar -->
+    <div id="role-banner" class="bg-blue-50 border-l-4 border-blue-900 p-3 rounded text-sm flex justify-between items-center text-blue-900 font-medium">
+      <span id="role-title-display">Loaded View: System Admin</span>
+      <span class="text-xs bg-blue-200 px-2 py-0.5 rounded text-blue-900 font-semibold" id="role-badge">Full Superuser Permissions</span>
     </div>
 
-    <!-- Section 1: Patient Registration -->
-    <section id="sec-patients" class="bg-white p-6 rounded-xl shadow-sm space-y-4">
-      <h2 class="text-lg font-bold text-slate-800 border-b pb-2">Patient Registration</h2>
-      <form onsubmit="registerPatient(event)" class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-500">Patient Name</label>
-          <input type="text" id="p-name" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-500">Age</label>
-          <input type="number" id="p-age" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-500">Symptoms</label>
-          <textarea id="p-symptoms" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" rows="2"></textarea>
-        </div>
-        <button type="submit" class="w-full bg-blue-900 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-800 transition">Register Patient</button>
-      </form>
+    <!-- REGISTRATION OFFICER MODULE -->
+    <section id="module-reception" class="role-module bg-white p-6 rounded-xl shadow-sm space-y-6">
+      <h2 class="text-lg font-bold text-slate-800 border-b pb-2 flex items-center justify-between">
+        <span>📋 Registration Officer Workspace</span>
+        <span class="text-xs font-normal text-slate-500">Patient Intake & Queue Management</span>
+      </h2>
 
-      <div class="mt-6">
-        <h3 class="text-sm font-bold text-slate-700 mb-2">Registered Patients List</h3>
-        <ul id="patient-list" class="divide-y divide-slate-100 text-sm">
-          <li class="py-2 text-slate-400 italic">No patients registered yet.</li>
-        </ul>
-      </div>
-    </section>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- New Intake Form -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">New Patient Intake</h3>
+          <form onsubmit="handlePatientRegistration(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Full Name</label>
+              <input type="text" id="reg-name" required class="w-full mt-1 p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Phone Number</label>
+              <input type="tel" id="reg-phone" required class="w-full mt-1 p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Age</label>
+              <input type="number" id="reg-age" required class="w-full mt-1 p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <button type="submit" class="w-full bg-blue-900 text-white py-2 rounded-lg font-semibold text-sm hover:bg-blue-800 transition">Register & Issue Queue No.</button>
+          </form>
+        </div>
 
-    <!-- Section 2: Lab Results -->
-    <section id="sec-lab" class="bg-white p-6 rounded-xl shadow-sm space-y-4 hidden">
-      <h2 class="text-lg font-bold text-slate-800 border-b pb-2">Laboratory Records</h2>
-      <p class="text-sm text-slate-600">Select a registered patient to record diagnostic lab findings.</p>
-      <div id="lab-patient-select" class="space-y-3">
-        <!-- Dynamic list of patients for lab entries -->
-      </div>
-    </section>
+        <!-- Phone Lookup -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Check Patient Visit History</h3>
+          <div class="flex gap-2">
+            <input type="tel" id="search-phone" placeholder="Enter phone number..." class="w-full p-2 border rounded-lg text-sm outline-none">
+            <button onclick="searchPatientByPhone()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-700">Lookup</button>
+          </div>
+          <div id="search-results" class="p-4 bg-slate-50 border rounded-lg text-sm min-h-[140px]">
+            <p class="text-slate-400 italic">Enter a phone number above to inspect visit history count and past records.</p>
+          </div>
+        </div>
 
-    <!-- Section 3: Chemist / Inventory -->
-    <section id="sec-chemist" class="bg-white p-6 rounded-xl shadow-sm space-y-4 hidden">
-      <h2 class="text-lg font-bold text-slate-800 border-b pb-2">Chemist & Inventory Management</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h3 class="text-sm font-bold text-slate-700 mb-2">Available Medicine</h3>
-          <ul class="text-sm divide-y">
-            <li class="py-1.5 flex justify-between"><span>Paracetamol (500mg)</span> <span class="font-semibold text-slate-600">KES 50</span></li>
-            <li class="py-1.5 flex justify-between"><span>Amoxicillin (250mg)</span> <span class="font-semibold text-slate-600">KES 150</span></li>
-            <li class="py-1.5 flex justify-between"><span>Brufen (400mg)</span> <span class="font-semibold text-slate-600">KES 80</span></li>
-            <li class="py-1.5 flex justify-between"><span>Cetirizine (10mg)</span> <span class="font-semibold text-slate-600">KES 40</span></li>
+        <!-- Active Queue -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Today's Patient Queue</h3>
+          <ul id="queue-list" class="divide-y divide-slate-100 text-sm max-h-[300px] overflow-y-auto pr-1">
+            <li class="py-2 text-slate-400 italic">No patients currently in queue.</li>
           </ul>
         </div>
-        <div>
-          <h3 class="text-sm font-bold text-slate-700 mb-2">Generate Billing Receipt</h3>
-          <input type="text" id="bill-item" placeholder="Item Name" class="w-full mb-2 p-2 border rounded-lg text-sm">
-          <input type="number" id="bill-price" placeholder="Price (KES)" class="w-full mb-2 p-2 border rounded-lg text-sm">
-          <button onclick="addBillItem()" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700">Add to Invoice</button>
-          
-          <div id="invoice-total" class="mt-4 p-3 bg-slate-50 border rounded-lg font-bold text-right text-slate-800">
-            Total: KES 0
+      </div>
+    </section>
+
+    <!-- NURSE MODULE -->
+    <section id="module-nurse" class="role-module bg-white p-6 rounded-xl shadow-sm space-y-6">
+      <h2 class="text-lg font-bold text-slate-800 border-b pb-2 flex items-center justify-between">
+        <span>🩺 Nurse Triage & Clinical Care</span>
+        <span class="text-xs font-normal text-slate-500">Diagnosis, Lab Requests & Dispensing</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Consultation & Diagnosis -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Clinical Evaluation</h3>
+          <form onsubmit="handleNurseConsultation(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Select Active Patient</label>
+              <select id="nurse-patient-select" onchange="loadNursePatientDetails(this.value)" required class="w-full mt-1 p-2 border rounded-lg text-sm bg-white">
+                <option value="">-- Select Patient from Queue --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Recorded Symptoms & Clinical Findings</label>
+              <textarea id="nurse-symptoms" required rows="2" class="w-full mt-1 p-2 border rounded-lg text-sm outline-none"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Diagnostic Disease Suggestions</label>
+              <input type="text" id="nurse-diagnosis" placeholder="e.g., Malaria, Typhoid, Acute Upper Respiratory Infection" class="w-full mt-1 p-2 border rounded-lg text-sm outline-none">
+            </div>
+
+            <!-- Lab Inquiry Check -->
+            <div class="p-3 bg-slate-50 border rounded-lg space-y-2">
+              <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                <input type="checkbox" id="nurse-req-lab" onchange="toggleLabInquiryField(this.checked)" class="w-4 h-4 text-blue-900 rounded">
+                Order Laboratory Test Requisition
+              </label>
+              <input type="text" id="nurse-lab-test-name" placeholder="Specific test requested (e.g., BS for MPS, Widal Test, CBC)" class="w-full p-2 border rounded-lg text-sm hidden">
+            </div>
+
+            <!-- Dispense Stock Medicine -->
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Dispense Medicine (Available In Stock)</label>
+              <select id="nurse-med-select" class="w-full mt-1 p-2 border rounded-lg text-sm bg-white">
+                <option value="">-- Select Medicine --</option>
+              </select>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-900 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-800 transition">Save & Submit Clinical File</button>
+          </form>
+        </div>
+
+        <!-- Lab Results Review Panel -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Laboratory Results Review</h3>
+          <div id="nurse-lab-results-panel" class="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+            <p class="text-slate-400 italic text-sm">No lab results available for review.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Section 4: Staff Roster -->
-    <section id="sec-staff" class="bg-white p-6 rounded-xl shadow-sm space-y-4 hidden">
-      <h2 class="text-lg font-bold text-slate-800 border-b pb-2">Clinic Duty Roster</h2>
-      <div class="space-y-2 text-sm">
-        <div class="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
-          <div>
-            <p class="font-bold text-slate-800">Dr. Kiplangat Chepkwony</p>
-            <p class="text-xs text-slate-500">Chief Medical Officer</p>
+    <!-- LAB TECHNICIAN MODULE -->
+    <section id="module-lab" class="role-module bg-white p-6 rounded-xl shadow-sm space-y-6">
+      <h2 class="text-lg font-bold text-slate-800 border-b pb-2 flex items-center justify-between">
+        <span>🔬 Laboratory Technician Workspace</span>
+        <span class="text-xs font-normal text-slate-500">Test Inquiries & Findings Entry</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Incoming Inquiries List -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Incoming Lab Inquiries</h3>
+          <div id="lab-inquiries-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+            <p class="text-slate-400 italic text-sm">No pending laboratory requisitions.</p>
           </div>
-          <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">On Duty</span>
         </div>
-        <div class="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
-          <div>
-            <p class="font-bold text-slate-800">Nurse Chepngeno</p>
-            <p class="text-xs text-slate-500">Triage & Patient Care</p>
-          </div>
-          <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Available</span>
+
+        <!-- Submit Results Form -->
+        <div class="space-y-4 bg-slate-50 p-4 border rounded-xl">
+          <h3 class="text-sm font-bold text-slate-700">Record Test Findings</h3>
+          <form onsubmit="handleLabSubmit(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Selected Inquiry ID</label>
+              <input type="text" id="lab-inquiry-id" readonly placeholder="Select an inquiry from the left" class="w-full mt-1 p-2 border rounded-lg text-sm bg-slate-200 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Patient Name</label>
+              <input type="text" id="lab-patient-name" readonly class="w-full mt-1 p-2 border rounded-lg text-sm bg-slate-200 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Lab Diagnostic Results & Observations</label>
+              <textarea id="lab-findings" required rows="4" placeholder="Enter exact diagnostic parameters, lab values, and observations..." class="w-full mt-1 p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-emerald-700 text-white py-2 rounded-lg font-semibold text-sm hover:bg-emerald-800 transition">Submit Lab Results</button>
+          </form>
         </div>
-        <div class="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
-          <div>
-            <p class="font-bold text-slate-800">Alex Cheruiyot</p>
-            <p class="text-xs text-slate-500">Lab Technician</p>
+      </div>
+    </section>
+
+    <!-- SYSTEM ADMIN MODULE -->
+    <section id="module-admin" class="role-module bg-white p-6 rounded-xl shadow-sm space-y-6">
+      <h2 class="text-lg font-bold text-slate-800 border-b pb-2 flex items-center justify-between">
+        <span>⚙️ System Administrator Management Control</span>
+        <span class="text-xs font-normal text-slate-500">Staff, Finance & Inventory Administration</span>
+      </h2>
+
+      <!-- Financial Overview Dashboard -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-slate-900 text-white p-4 rounded-xl">
+          <p class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Total Revenue (Sales)</p>
+          <p id="admin-income" class="text-2xl font-bold text-emerald-400 mt-1">KES 0</p>
+        </div>
+        <div class="bg-slate-900 text-white p-4 rounded-xl">
+          <p class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Stock Expenditure</p>
+          <p id="admin-expenditure" class="text-2xl font-bold text-rose-400 mt-1">KES 0</p>
+        </div>
+        <div class="bg-slate-900 text-white p-4 rounded-xl">
+          <p class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Net Clinic Margin</p>
+          <p id="admin-margin" class="text-2xl font-bold text-blue-300 mt-1">KES 0</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <!-- Staff Registration -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Register Staff Member</h3>
+          <form onsubmit="handleStaffRegistration(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Staff Name</label>
+              <input type="text" id="staff-name" required class="w-full mt-1 p-2 border rounded-lg text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Role Title</label>
+              <select id="staff-role" required class="w-full mt-1 p-2 border rounded-lg text-sm bg-white">
+                <option value="Nurse">Nurse</option>
+                <option value="Lab Technician">Lab Technician</option>
+                <option value="Registration Officer">Registration Officer</option>
+                <option value="Cleaner">Cleaner</option>
+                <option value="Administrator">Administrator</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full bg-slate-900 text-white py-2 rounded-lg font-semibold text-sm hover:bg-slate-800">Add Staff Member</button>
+          </form>
+
+          <div class="mt-4">
+            <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Registered Staff Roster</h4>
+            <ul id="admin-staff-list" class="divide-y divide-slate-100 text-sm max-h-[180px] overflow-y-auto">
+              <li class="py-1.5 text-slate-400 italic">No staff registered yet.</li>
+            </ul>
           </div>
-          <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Available</span>
+        </div>
+
+        <!-- Inventory & Purchased Stock Logging -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Register Purchased Stock & Expenses</h3>
+          <form onsubmit="handleMedicineStockAdd(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Medicine Name</label>
+              <input type="text" id="med-name" required placeholder="e.g., Paracetamol 500mg" class="w-full mt-1 p-2 border rounded-lg text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Purchased Units Count</label>
+              <input type="number" id="med-qty" required placeholder="e.g., 100" class="w-full mt-1 p-2 border rounded-lg text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Purchase Wholesale Expenditure (KES)</label>
+              <input type="number" id="med-cost" required placeholder="Total money spent" class="w-full mt-1 p-2 border rounded-lg text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-slate-500">Retail Unit Selling Price (KES)</label>
+              <input type="number" id="med-price" required placeholder="Price per item for patients" class="w-full mt-1 p-2 border rounded-lg text-sm outline-none">
+            </div>
+            <button type="submit" class="w-full bg-emerald-700 text-white py-2 rounded-lg font-semibold text-sm hover:bg-emerald-800">Log Purchased Stock</button>
+          </form>
+        </div>
+
+        <!-- Current Medicine Inventory & Prices -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-slate-700">Pharmacy Stock & Pricing</h3>
+          <div class="border rounded-lg p-2 max-h-[380px] overflow-y-auto">
+            <ul id="admin-inventory-list" class="divide-y divide-slate-100 text-sm">
+              <li class="py-2 text-slate-400 italic">No inventory recorded.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- JavaScript Logic -->
+  <!-- JavaScript Engine -->
   <script>
-    let patients = [];
-    let currentTotal = 0;
+    // State initialization with localStorage persistent database fallback
+    let db = {
+      patients: JSON.parse(localStorage.getItem('nc_patients')) || [],
+      staff: JSON.parse(localStorage.getItem('nc_staff')) || [
+        { name: "Dr. Kiplangat Chepkwony", role: "Administrator" },
+        { name: "Nurse Chepngeno", role: "Nurse" },
+        { name: "Alex Cheruiyot", role: "Lab Technician" },
+        { name: "Mercy Bett", role: "Registration Officer" },
+        { name: "Kiprono Langat", role: "Cleaner" }
+      ],
+      inventory: JSON.parse(localStorage.getItem('nc_inventory')) || [
+        { name: "Paracetamol (500mg)", stock: 150, cost: 3000, price: 50 },
+        { name: "Amoxicillin (250mg)", stock: 80, cost: 5000, price: 150 },
+        { name: "Brufen (400mg)", stock: 100, cost: 4000, price: 80 }
+      ],
+      labInquiries: JSON.parse(localStorage.getItem('nc_lab')) || [],
+      expenditure: parseFloat(localStorage.getItem('nc_expenditure')) || 12000,
+      revenue: parseFloat(localStorage.getItem('nc_revenue')) || 0
+    };
 
-    function switchTab(tabName) {
-      ['patients', 'lab', 'chemist', 'staff'].forEach(t => {
-        document.getElementById('sec-' + t).classList.add('hidden');
-        document.getElementById('tab-' + t).className = 'px-4 py-2 text-sm font-semibold rounded-lg bg-white text-slate-700 hover:bg-slate-200';
+    function saveState() {
+      localStorage.setItem('nc_patients', JSON.stringify(db.patients));
+      localStorage.setItem('nc_staff', JSON.stringify(db.staff));
+      localStorage.setItem('nc_inventory', JSON.stringify(db.inventory));
+      localStorage.setItem('nc_lab', JSON.stringify(db.labInquiries));
+      localStorage.setItem('nc_expenditure', db.expenditure);
+      localStorage.setItem('nc_revenue', db.revenue);
+      renderAll();
+    }
+
+    // Role View Switcher
+    function switchRole(role) {
+      const modules = document.querySelectorAll('.role-module');
+      const titleDisplay = document.getElementById('role-title-display');
+      const badge = document.getElementById('role-badge');
+
+      if (role === 'admin') {
+        modules.forEach(m => m.classList.remove('hidden'));
+        titleDisplay.textContent = "Loaded View: System Administrator";
+        badge.textContent = "Full Superuser Permissions";
+      } else {
+        modules.forEach(m => m.classList.add('hidden'));
+        document.getElementById('module-' + role).classList.remove('hidden');
+        
+        if (role === 'reception') {
+          titleDisplay.textContent = "Loaded View: Registration Officer";
+          badge.textContent = "Patient Intake & Queue Management";
+        } else if (role === 'nurse') {
+          titleDisplay.textContent = "Loaded View: Nurse";
+          badge.textContent = "Clinical Triage & Dispensing";
+        } else if (role === 'lab') {
+          titleDisplay.textContent = "Loaded View: Laboratory Technician";
+          badge.textContent = "Diagnostic Analysis & Results Entry";
+        }
+      }
+    }
+
+    // REGISTRATION OFFICER FUNCTIONS
+    function handlePatientRegistration(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const phone = document.getElementById('reg-phone').value;
+      const age = document.getElementById('reg-age').value;
+
+      const existingVisits = db.patients.filter(p => p.phone === phone).length;
+      const queueNo = db.patients.length + 101;
+
+      db.patients.push({
+        id: 'P-' + Date.now().toString().slice(-4),
+        name,
+        phone,
+        age,
+        queueNo,
+        visitCount: existingVisits + 1,
+        date: new Date().toLocaleDateString(),
+        symptoms: '',
+        diagnosis: '',
+        dispensedMed: '',
+        labStatus: 'None'
       });
 
-      document.getElementById('sec-' + tabName).classList.remove('hidden');
-      document.getElementById('tab-' + tabName).className = 'px-4 py-2 text-sm font-semibold rounded-lg bg-blue-900 text-white';
+      document.getElementById('reg-name').value = '';
+      document.getElementById('reg-phone').value = '';
+      document.getElementById('reg-age').value = '';
+
+      alert(`Patient Registered! Queue Number Assigned: #${queueNo}`);
+      saveState();
     }
 
-    function registerPatient(e) {
-      e.preventDefault();
-      const name = document.getElementById('p-name').value;
-      const age = document.getElementById('p-age').value;
-      const symptoms = document.getElementById('p-symptoms').value;
+    function searchPatientByPhone() {
+      const phone = document.getElementById('search-phone').value;
+      const resultsDiv = document.getElementById('search-results');
+      const matches = db.patients.filter(p => p.phone === phone);
 
-      patients.push({ name, age, symptoms });
-      document.getElementById('p-name').value = '';
-      document.getElementById('p-age').value = '';
-      document.getElementById('p-symptoms').value = '';
-
-      renderPatients();
-    }
-
-    function renderPatients() {
-      const list = document.getElementById('patient-list');
-      if (patients.length === 0) {
-        list.innerHTML = '<li class="py-2 text-slate-400 italic">No patients registered yet.</li>';
+      if (matches.length === 0) {
+        resultsDiv.innerHTML = `<p class="text-rose-600 font-semibold">No patient records found for phone: ${phone}</p>`;
         return;
       }
-      list.innerHTML = patients.map((p, idx) => `
+
+      const latest = matches[matches.length - 1];
+      resultsDiv.innerHTML = `
+        <div class="space-y-1">
+          <p class="font-bold text-slate-800">${latest.name} (${latest.age} yrs)</p>
+          <p class="text-xs text-slate-500">Phone: ${latest.phone}</p>
+          <p class="text-xs text-blue-900 font-semibold">Total System Visits: ${matches.length} Visit(s)</p>
+          <p class="text-xs text-slate-600">Last Visit Date: ${latest.date}</p>
+        </div>
+      `;
+    }
+
+    // NURSE FUNCTIONS
+    function toggleLabInquiryField(checked) {
+      const field = document.getElementById('nurse-lab-test-name');
+      if (checked) field.classList.remove('hidden');
+      else field.classList.add('hidden');
+    }
+
+    function loadNursePatientDetails(patientId) {
+      const patient = db.patients.find(p => p.id === patientId);
+      if (!patient) return;
+      document.getElementById('nurse-symptoms').value = patient.symptoms || '';
+      document.getElementById('nurse-diagnosis').value = patient.diagnosis || '';
+    }
+
+    function handleNurseConsultation(e) {
+      e.preventDefault();
+      const patientId = document.getElementById('nurse-patient-select').value;
+      const symptoms = document.getElementById('nurse-symptoms').value;
+      const diagnosis = document.getElementById('nurse-diagnosis').value;
+      const reqLab = document.getElementById('nurse-req-lab').checked;
+      const labTestName = document.getElementById('nurse-lab-test-name').value;
+      const selectedMedIndex = document.getElementById('nurse-med-select').value;
+
+      const patient = db.patients.find(p => p.id === patientId);
+      if (!patient) return;
+
+      patient.symptoms = symptoms;
+      patient.diagnosis = diagnosis;
+
+      // Handle Lab Inquiry Requisition
+      if (reqLab && labTestName) {
+        db.labInquiries.push({
+          id: 'LAB-' + Date.now().toString().slice(-4),
+          patientId: patient.id,
+          patientName: patient.name,
+          testRequested: labTestName,
+          status: 'Pending',
+          results: ''
+        });
+        patient.labStatus = 'Pending Lab';
+      }
+
+      // Handle Medicine Dispensing & Revenue
+      if (selectedMedIndex !== '') {
+        const med = db.inventory[selectedMedIndex];
+        if (med && med.stock > 0) {
+          med.stock -= 1;
+          db.revenue += parseFloat(med.price);
+          patient.dispensedMed = med.name;
+        } else {
+          alert('Selected medicine is out of stock!');
+        }
+      }
+
+      alert(`Consultation updated for ${patient.name}`);
+      saveState();
+    }
+
+    // LAB TECHNICIAN FUNCTIONS
+    function selectLabInquiry(inquiryId) {
+      const inquiry = db.labInquiries.find(l => l.id === inquiryId);
+      if (!inquiry) return;
+      document.getElementById('lab-inquiry-id').value = inquiry.id;
+      document.getElementById('lab-patient-name').value = inquiry.patientName + ' (' + inquiry.testRequested + ')';
+    }
+
+    function handleLabSubmit(e) {
+      e.preventDefault();
+      const inquiryId = document.getElementById('lab-inquiry-id').value;
+      const findings = document.getElementById('lab-findings').value;
+
+      const inquiry = db.labInquiries.find(l => l.id === inquiryId);
+      if (!inquiry) return;
+
+      inquiry.results = findings;
+      inquiry.status = 'Completed';
+
+      const patient = db.patients.find(p => p.id === inquiry.patientId);
+      if (patient) {
+        patient.labStatus = 'Lab Results Ready';
+      }
+
+      document.getElementById('lab-inquiry-id').value = '';
+      document.getElementById('lab-patient-name').value = '';
+      document.getElementById('lab-findings').value = '';
+
+      alert('Lab diagnostic result submitted successfully!');
+      saveState();
+    }
+
+    // ADMIN FUNCTIONS
+    function handleStaffRegistration(e) {
+      e.preventDefault();
+      const name = document.getElementById('staff-name').value;
+      const role = document.getElementById('staff-role').value;
+
+      db.staff.push({ name, role });
+      document.getElementById('staff-name').value = '';
+      alert(`Staff Member Added: ${name} (${role})`);
+      saveState();
+    }
+
+    function handleMedicineStockAdd(e) {
+      e.preventDefault();
+      const name = document.getElementById('med-name').value;
+      const qty = parseInt(document.getElementById('med-qty').value);
+      const cost = parseFloat(document.getElementById('med-cost').value);
+      const price = parseFloat(document.getElementById('med-price').value);
+
+      const existing = db.inventory.find(i => i.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        existing.stock += qty;
+        existing.price = price;
+      } else {
+        db.inventory.push({ name, stock: qty, cost, price });
+      }
+
+      db.expenditure += cost;
+
+      document.getElementById('med-name').value = '';
+      document.getElementById('med-qty').value = '';
+      document.getElementById('med-cost').value = '';
+      document.getElementById('med-price').value = '';
+
+      alert(`Stock Updated: ${qty} units of ${name}`);
+      saveState();
+    }
+
+    // RENDER ENGINE
+    function renderAll() {
+      // Render Reception Queue
+      const queueList = document.getElementById('queue-list');
+      if (db.patients.length === 0) {
+        queueList.innerHTML = '<li class="py-2 text-slate-400 italic">No patients currently in queue.</li>';
+      } else {
+        queueList.innerHTML = db.patients.map(p => `
+          <li class="py-2 flex justify-between items-center">
+            <div>
+              <p class="font-bold text-slate-800">${p.name} <span class="text-xs text-blue-900">(${p.phone})</span></p>
+              <p class="text-xs text-slate-500">Visits: ${p.visitCount} | Age: ${p.age}</p>
+            </div>
+            <span class="text-xs bg-blue-100 text-blue-900 px-2 py-1 rounded font-bold">Queue #${p.queueNo}</span>
+          </li>
+        `).join('');
+      }
+
+      // Render Nurse Patient Dropdown
+      const nursePatientSelect = document.getElementById('nurse-patient-select');
+      nursePatientSelect.innerHTML = '<option value="">-- Select Patient from Queue --</option>' +
+        db.patients.map(p => `<option value="${p.id}">#${p.queueNo} - ${p.name} (${p.phone})</option>`).join('');
+
+      // Render Nurse Med Dropdown
+      const nurseMedSelect = document.getElementById('nurse-med-select');
+      nurseMedSelect.innerHTML = '<option value="">-- Select Medicine --</option>' +
+        db.inventory.map((m, idx) => `<option value="${idx}">${m.name} (Stock: ${m.stock}) - KES ${m.price}</option>`).join('');
+
+      // Render Nurse Lab Review Panel
+      const nurseLabPanel = document.getElementById('nurse-lab-results-panel');
+      const completedLabs = db.labInquiries.filter(l => l.status === 'Completed');
+      if (completedLabs.length === 0) {
+        nurseLabPanel.innerHTML = '<p class="text-slate-400 italic text-sm">No lab results available for review.</p>';
+      } else {
+        nurseLabPanel.innerHTML = completedLabs.map(l => `
+          <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-emerald-900">${l.patientName}</span>
+              <span class="text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">${l.testRequested}</span>
+            </div>
+            <p class="text-xs text-slate-700"><strong>Findings:</strong> ${l.results}</p>
+          </div>
+        `).join('');
+      }
+
+      // Render Lab Inquiries
+      const labInquiriesList = document.getElementById('lab-inquiries-list');
+      const pendingLabs = db.labInquiries.filter(l => l.status === 'Pending');
+      if (pendingLabs.length === 0) {
+        labInquiriesList.innerHTML = '<p class="text-slate-400 italic text-sm">No pending laboratory requisitions.</p>';
+      } else {
+        labInquiriesList.innerHTML = pendingLabs.map(l => `
+          <div onclick="selectLabInquiry('${l.id}')" class="p-3 bg-slate-50 border hover:border-blue-500 rounded-lg text-sm cursor-pointer transition">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-slate-800">${l.patientName}</span>
+              <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-semibold">Pending</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Requested Test: <strong>${l.testRequested}</strong></p>
+          </div>
+        `).join('');
+      }
+
+      // Render Admin Financials
+      document.getElementById('admin-income').textContent = `KES ${db.revenue.toLocaleString()}`;
+      document.getElementById('admin-expenditure').textContent = `KES ${db.expenditure.toLocaleString()}`;
+      document.getElementById('admin-margin').textContent = `KES ${(db.revenue - db.expenditure).toLocaleString()}`;
+
+      // Render Admin Staff List
+      const staffList = document.getElementById('admin-staff-list');
+      staffList.innerHTML = db.staff.map(s => `
+        <li class="py-1.5 flex justify-between items-center">
+          <span class="font-semibold text-slate-800">${s.name}</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border">${s.role}</span>
+        </li>
+      `).join('');
+
+      // Render Admin Inventory List
+      const invList = document.getElementById('admin-inventory-list');
+      invList.innerHTML = db.inventory.map(i => `
         <li class="py-2 flex justify-between items-center">
           <div>
-            <span class="font-bold text-slate-800">${p.name}</span> (${p.age} yrs)
-            <p class="text-xs text-slate-500">${p.symptoms}</p>
+            <p class="font-bold text-slate-800">${i.name}</p>
+            <p class="text-xs text-slate-500">Available Stock: ${i.stock} units</p>
           </div>
-          <span class="text-xs bg-slate-100 border px-2 py-0.5 rounded text-slate-600">ID: #${idx + 101}</span>
+          <span class="text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-1 rounded">KES ${i.price}</span>
         </li>
       `).join('');
     }
 
-    function addBillItem() {
-      const price = parseFloat(document.getElementById('bill-price').value);
-      if (!isNaN(price)) {
-        currentTotal += price;
-        document.getElementById('invoice-total').textContent = `Total: KES ${currentTotal}`;
-        document.getElementById('bill-item').value = '';
-        document.getElementById('bill-price').value = '';
-      }
-    }
+    // Initial Engine Start
+    renderAll();
+    switchRole('admin');
   </script>
 </body>
 </html>

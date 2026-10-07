@@ -1,1448 +1,1006 @@
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nevada Clinic Management System</title>
+    <title>Nevada Clinic - Management System</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Inter Font -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+<body class="h-full flex flex-col font-sans text-slate-800">
 
-    <!-- Top Header Banner -->
-    <header class="bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-800 text-white shadow-md sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row justify-between items-center gap-3">
-            <div class="flex items-center space-x-3 text-center md:text-left">
-                <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-sm border border-white/20">
-                    <i class="fa-solid font-bold fa-hospital-user text-2xl text-emerald-300"></i>
-                </div>
-                <div>
-                    <div class="flex items-center justify-center md:justify-start gap-2">
-                        <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">Nevada Clinic</h1>
-                        <span class="text-xs bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 px-2 py-0.5 rounded-full font-medium">Healthcare Systems</span>
+    <!-- Top Header & Branding -->
+    <header class="bg-slate-900 text-white shadow-lg border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 bg-blue-600 rounded-xl shadow-md">
+                        <i data-lucide="cross" class="w-7 h-7 text-white"></i>
                     </div>
-                    <p class="text-xs font-medium text-emerald-100 italic tracking-wide">"We Care, God Heals"</p>
-                </div>
-            </div>
-
-            <!-- Role Selector & Director Badge -->
-            <div class="flex flex-wrap items-center justify-center gap-3">
-                <div class="bg-teal-900/60 border border-teal-500/30 rounded-lg px-3 py-1.5 text-xs text-teal-100 flex items-center gap-2">
-                    <i class="fa-solid fa-user-tie text-emerald-400"></i>
-                    <span>Owner: <strong class="text-white font-semibold">Weldon Chepkwony</strong></span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-2xl font-bold tracking-tight text-white">Nevada Clinic</h1>
+                            <span class="text-xs bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-medium">v2.5</span>
+                        </div>
+                        <p class="text-xs text-slate-300 italic">"We heal but God heals" &bull; <span class="text-blue-400 font-semibold">Owner: Weldon Chepkwony</span></p>
+                    </div>
                 </div>
 
-                <div class="flex items-center bg-white/10 rounded-lg p-1 border border-white/20">
-                    <label for="roleSelector" class="text-xs font-medium px-2 text-teal-100"><i class="fa-solid fa-user-shield mr-1"></i> Active Role:</label>
-                    <select id="roleSelector" onchange="switchRole(this.value)" class="bg-slate-900 text-teal-300 font-semibold text-xs rounded-md px-3 py-1.5 outline-none border border-teal-500/40 cursor-pointer focus:ring-2 focus:ring-emerald-400">
-                        <option value="ADMIN">Admin (Weldon Chepkwony)</option>
-                        <option value="REGISTRATION">Registration Staff</option>
-                        <option value="NURSE">Nurse (Triage)</option>
-                        <option value="CONSULTANT">Consultant Doctor</option>
-                        <option value="LAB_TECH">Lab Technician</option>
+                <!-- Live Role Switcher Bar -->
+                <div class="flex flex-wrap items-center gap-3 bg-slate-800/80 p-2 rounded-xl border border-slate-700">
+                    <span class="text-xs font-semibold uppercase text-slate-400 flex items-center gap-1.5 px-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Active Role:
+                    </span>
+                    <select id="roleSelector" onchange="switchRole(this.value)" class="bg-slate-900 text-slate-100 text-sm font-semibold rounded-lg px-3 py-1.5 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                        <option value="Admin">Admin (Weldon Chepkwony)</option>
+                        <option value="Registration Staff">Registration Staff (Full Switch Access)</option>
+                        <option value="Nurse">Nurse</option>
+                        <option value="Consultant">Consultant Doctor</option>
+                        <option value="Lab Technician">Lab Technician</option>
                     </select>
+                    <span id="roleBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        Admin Mode
+                    </span>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Dynamic Navigation Bar -->
-    <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-[61px] z-30">
+    <!-- Tab Navigation -->
+    <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-[73px] z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex space-x-1 overflow-x-auto py-2 custom-scrollbar" id="navigationTabs">
-                <!-- Tabs will be rendered dynamically based on active role -->
+            <div class="flex space-x-1 overflow-x-auto custom-scrollbar text-sm font-medium py-1" id="navTabs">
+                <button onclick="switchTab('intake')" id="tab-intake" class="nav-tab tab-active flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Patient Intake
+                </button>
+                <button onclick="switchTab('nurse')" id="tab-nurse" class="nav-tab flex items-center gap-2 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors whitespace-nowrap">
+                    <i data-lucide="stethoscope" class="w-4 h-4"></i> Nurse Station
+                </button>
+                <button onclick="switchTab('consult')" id="tab-consult" class="nav-tab flex items-center gap-2 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors whitespace-nowrap">
+                    <i data-lucide="clipboard-list" class="w-4 h-4"></i> Clinical Consult
+                </button>
+                <button onclick="switchTab('lab')" id="tab-lab" class="nav-tab flex items-center gap-2 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors whitespace-nowrap">
+                    <i data-lucide="flask-conical" class="w-4 h-4"></i> Laboratory Queue
+                </button>
+                <button onclick="switchTab('pharmacy')" id="tab-pharmacy" class="nav-tab flex items-center gap-2 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors whitespace-nowrap">
+                    <i data-lucide="pill" class="w-4 h-4"></i> Pharmacy & Stock
+                </button>
+                <button onclick="switchTab('financial')" id="tab-financial" class="nav-tab flex items-center gap-2 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors whitespace-nowrap">
+                    <i data-lucide="line-chart" class="w-4 h-4"></i> Financial Overview
+                </button>
+                <button onclick="switchTab('admin')" id="tab-admin" class="nav-tab flex items-center gap-2 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors whitespace-nowrap">
+                    <i data-lucide="sliders" class="w-4 h-4"></i> Admin Control
+                </button>
             </div>
         </div>
     </nav>
 
-    <!-- Toast Alert Container -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+    <!-- Alert Banner Container -->
+    <div id="alertContainer" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 hidden">
+        <div id="alertBox" class="p-4 rounded-xl border flex items-center justify-between shadow-sm">
+            <div class="flex items-center space-x-3">
+                <i id="alertIcon" data-lucide="info" class="w-5 h-5"></i>
+                <span id="alertMessage" class="text-sm font-medium"></span>
+            </div>
+            <button onclick="dismissAlert()" class="text-slate-400 hover:text-slate-600 p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- Main Content Area -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
-        <!-- ================= REGISTRATION SECTION ================= -->
-        <section id="section-registration" class="tab-content hidden space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-id-card text-teal-600"></i> Patient Intake & Registration
-                        </h2>
-                        <p class="text-xs text-slate-500">Register new patients or check existing visit records</p>
-                    </div>
-                    <span class="text-xs bg-teal-50 text-teal-700 border border-teal-200 font-medium px-2.5 py-1 rounded-md">
-                        <i class="fa-solid fa-bolt mr-1"></i> Quick Intake
-                    </span>
-                </div>
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- New Patient Form -->
-                    <div class="lg:col-span-1 bg-slate-50 p-5 rounded-lg border border-slate-200">
-                        <h3 class="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-1.5">
-                            <i class="fa-solid fa-user-plus text-emerald-600"></i> Register New Patient
-                        </h3>
-                        <form id="patientRegistrationForm" onsubmit="handlePatientRegistration(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Full Name *</label>
-                                <input type="text" id="regFullName" required placeholder="e.g. Mary Wanjiku" class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Phone Number *</label>
-                                <input type="tel" id="regPhone" required placeholder="e.g. 0712345678" class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1">Age *</label>
-                                    <input type="number" id="regAge" required min="0" max="120" placeholder="Years" class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1">Gender *</label>
-                                    <select id="regGender" required class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none bg-white">
-                                        <option value="">Select</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Chief Complaint / Visit Reason</label>
-                                <textarea id="regReason" rows="2" placeholder="Brief reason for visit..." class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs py-2.5 rounded-md transition duration-150 flex items-center justify-center gap-2 shadow-sm">
-                                <i class="fa-solid fa-check-circle"></i> Complete Registration & Queue
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Search & Patient Directory -->
-                    <div class="lg:col-span-2 flex flex-col">
-                        <div class="flex flex-col sm:flex-row justify-between gap-3 mb-4">
-                            <div class="relative flex-grow">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
-                                <input type="text" id="patientSearchInput" oninput="renderPatientsTable()" placeholder="Search patient by Name, Phone, or ID..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                            </div>
-                            <span class="text-xs text-slate-500 self-center font-medium" id="patientCountBadge">0 registered patients</span>
-                        </div>
-
-                        <div class="overflow-x-auto border border-slate-200 rounded-lg flex-grow">
-                            <table class="w-full text-left text-xs text-slate-600">
-                                <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 uppercase text-[11px] tracking-wider">
-                                    <tr>
-                                        <th class="p-3">Patient ID</th>
-                                        <th class="p-3">Name</th>
-                                        <th class="p-3">Phone</th>
-                                        <th class="p-3">Demographics</th>
-                                        <th class="p-3 text-center">Visits</th>
-                                        <th class="p-3">Status</th>
-                                        <th class="p-3 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="patientsTableBody" class="divide-y divide-slate-200 bg-white">
-                                    <!-- Dynamic Rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= TRIAGE / NURSE SECTION ================= -->
-        <section id="section-nurse" class="tab-content hidden space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-user-nurse text-teal-600"></i> Nurse Station & Triage
-                        </h2>
-                        <p class="text-xs text-slate-500">Record vital signs for waiting patients to forward to doctor consultation</p>
-                    </div>
-                    <span class="text-xs bg-amber-50 text-amber-700 border border-amber-200 font-medium px-2.5 py-1 rounded-md flex items-center gap-1">
-                        <i class="fa-solid fa-stethoscope"></i> Triage Queue
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Queue List -->
-                    <div class="lg:col-span-1 border border-slate-200 rounded-lg overflow-hidden bg-white flex flex-col h-[520px]">
-                        <div class="p-3 bg-slate-100 border-b border-slate-200 font-semibold text-xs text-slate-700 flex justify-between items-center">
-                            <span>Awaiting Triage</span>
-                            <span id="triageQueueCount" class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px]">0</span>
-                        </div>
-                        <div id="triageQueueList" class="divide-y divide-slate-100 overflow-y-auto custom-scrollbar flex-grow p-2 space-y-2">
-                            <!-- Dynamic Triage Queue Items -->
-                        </div>
-                    </div>
-
-                    <!-- Vitals Entry Form -->
-                    <div class="lg:col-span-2 bg-slate-50 p-5 rounded-lg border border-slate-200 flex flex-col justify-between" id="vitalsFormContainer">
-                        <div id="noPatientSelectedTriage" class="text-center py-20 text-slate-400">
-                            <i class="fa-solid fa-hand-pointer text-4xl mb-3"></i>
-                            <p class="text-xs font-medium">Select a patient from the queue to enter vitals</p>
-                        </div>
-
-                        <form id="vitalsForm" onsubmit="handleSaveVitals(event)" class="hidden space-y-5">
-                            <div class="bg-white p-3 rounded-md border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-slate-800 text-sm" id="selectedTriagePatientName">-</h4>
-                                    <p class="text-xs text-slate-500" id="selectedTriagePatientInfo">-</p>
-                                </div>
-                                <span class="text-xs bg-teal-100 text-teal-800 font-semibold px-2.5 py-1 rounded-md" id="selectedTriagePatientId">-</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1"><i class="fa-solid fa-heart-pulse text-red-500 mr-1"></i> Blood Pressure (mmHg)</label>
-                                    <input type="text" id="vitalBP" placeholder="e.g. 120/80" required class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1"><i class="fa-solid fa-temperature-high text-amber-500 mr-1"></i> Body Temp (°C)</label>
-                                    <input type="number" step="0.1" id="vitalTemp" placeholder="e.g. 36.8" required class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1"><i class="fa-solid fa-wave-square text-emerald-500 mr-1"></i> Pulse Rate (BPM)</label>
-                                    <input type="number" id="vitalPulse" placeholder="e.g. 72" required class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1"><i class="fa-solid fa-weight-scale text-blue-500 mr-1"></i> Weight (kg)</label>
-                                    <input type="number" step="0.1" id="vitalWeight" placeholder="e.g. 68.5" required class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Nurse Triage Notes</label>
-                                <textarea id="vitalNotes" rows="3" placeholder="Symptoms reported, allergies, or immediate observations..." class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none"></textarea>
-                            </div>
-
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs py-2.5 rounded-md transition duration-150 flex items-center justify-center gap-2 shadow-sm">
-                                <i class="fa-solid fa-arrow-right"></i> Save Vitals & Send to Doctor Consultation
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= CONSULTATION SECTION ================= -->
-        <section id="section-consultant" class="tab-content hidden space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-user-md text-teal-600"></i> Doctor's Consultation Room
-                        </h2>
-                        <p class="text-xs text-slate-500">Perform diagnosis, order lab investigations, and prescribe smart stock drugs</p>
-                    </div>
-                    <span class="text-xs bg-blue-50 text-blue-700 border border-blue-200 font-medium px-2.5 py-1 rounded-md">
-                        <i class="fa-solid fa-notes-medical mr-1"></i> Clinical Suite
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Consultation Queue -->
-                    <div class="lg:col-span-1 border border-slate-200 rounded-lg overflow-hidden bg-white flex flex-col h-[620px]">
-                        <div class="p-3 bg-slate-100 border-b border-slate-200 font-semibold text-xs text-slate-700 flex justify-between items-center">
-                            <span>Consultation Queue</span>
-                            <span id="consultQueueCount" class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px]">0</span>
-                        </div>
-                        <div id="consultQueueList" class="divide-y divide-slate-100 overflow-y-auto custom-scrollbar flex-grow p-2 space-y-2">
-                            <!-- Dynamic Consult Queue -->
-                        </div>
-                    </div>
-
-                    <!-- Clinical Consultation Portal -->
-                    <div class="lg:col-span-2 bg-slate-50 p-5 rounded-lg border border-slate-200 custom-scrollbar overflow-y-auto max-h-[620px]">
-                        <div id="noPatientSelectedConsult" class="text-center py-24 text-slate-400">
-                            <i class="fa-solid fa-stethoscope text-4xl mb-3"></i>
-                            <p class="text-xs font-medium">Select a patient from the queue to start clinical consultation</p>
-                        </div>
-
-                        <div id="consultationPanel" class="hidden space-y-5">
-                            <!-- Patient Summary Card -->
-                            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between gap-3">
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-base" id="consultPatientName">-</h3>
-                                    <p class="text-xs text-slate-500" id="consultPatientDetails">-</p>
-                                    <p class="text-xs text-slate-600 mt-1"><strong>Reason:</strong> <span id="consultPatientReason">-</span></p>
-                                </div>
-                                <div class="bg-teal-50 p-3 rounded-md border border-teal-100 text-xs space-y-1 min-w-[180px]">
-                                    <div class="text-teal-900 font-semibold border-b border-teal-200 pb-1 mb-1">Vitals Logged</div>
-                                    <div class="flex justify-between"><span>BP:</span><strong id="consultBP">-</strong></div>
-                                    <div class="flex justify-between"><span>Temp:</span><strong id="consultTemp">-</strong></div>
-                                    <div class="flex justify-between"><span>Pulse:</span><strong id="consultPulse">-</strong></div>
-                                    <div class="flex justify-between"><span>Weight:</span><strong id="consultWeight">-</strong></div>
-                                </div>
-                            </div>
-
-                            <!-- Diagnosis Notes -->
-                            <div class="bg-white p-4 rounded-lg border border-slate-200">
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Doctor's Clinical Notes & Diagnosis *</label>
-                                <textarea id="consultDiagnosis" rows="3" placeholder="Enter findings, physical examination, and final diagnosis..." class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none"></textarea>
-                            </div>
-
-                            <!-- Lab Test Ordering -->
-                            <div class="bg-white p-4 rounded-lg border border-slate-200">
-                                <h4 class="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-vials text-purple-600"></i> Order Laboratory Investigation
-                                </h4>
-                                <div class="flex gap-2">
-                                    <select id="labTestSelect" class="w-full text-xs p-2 border border-slate-300 rounded-md bg-white">
-                                        <option value="">-- Select Required Test --</option>
-                                        <option value="Full Blood Count (FBC)">Full Blood Count (FBC)</option>
-                                        <option value="Malaria BS Test">Malaria BS Test</option>
-                                        <option value="Urinalysis">Urinalysis</option>
-                                        <option value="Blood Sugar (Random)">Blood Sugar (Random)</option>
-                                        <option value="Typhoid Widal Test">Typhoid Widal Test</option>
-                                    </select>
-                                    <button onclick="addLabTestOrder()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-4 py-2 rounded-md font-medium shrink-0">
-                                        Send to Lab Queue
-                                    </button>
-                                </div>
-                                <div id="consultLabResultsDisplay" class="mt-3 text-xs text-slate-600 border-t border-slate-100 pt-2">
-                                    <!-- Dynamic Lab Results display for this visit -->
-                                </div>
-                            </div>
-
-                            <!-- Smart Pharmacy Prescriptions -->
-                            <div class="bg-white p-4 rounded-lg border border-slate-200 space-y-3">
-                                <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
-                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-pills text-teal-600"></i> Smart Stock Drug Prescription</span>
-                                    <span class="text-[11px] font-normal text-slate-500">Live Inventory Checked</span>
-                                </h4>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    <div class="sm:col-span-2">
-                                        <select id="prescDrugSelect" onchange="updatePrescDrugPrice()" class="w-full text-xs p-2 border border-slate-300 rounded-md bg-white">
-                                            <option value="">-- Select Drug --</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <input type="number" id="prescQty" min="1" value="1" placeholder="Qty" oninput="calculatePrescCost()" class="w-full text-xs p-2 border border-slate-300 rounded-md">
-                                    </div>
-                                </div>
-
-                                <!-- Dynamic Stock & Price Status Box -->
-                                <div id="drugStockAlert" class="hidden text-xs p-2.5 rounded-md border flex justify-between items-center">
-                                    <!-- Dynamic Stock Warning / Alternative Suggestions -->
-                                </div>
-
-                                <div class="flex justify-between items-center pt-1">
-                                    <div class="text-xs text-slate-600">
-                                        Unit Price: <span font-semibold text-slate-800 id="prescUnitPrice">KES 0</span> | 
-                                        Est. Total: <strong class="text-teal-700" id="prescTotalCost">KES 0</strong>
-                                    </div>
-                                    <button onclick="addPrescriptionItem()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs px-3 py-1.5 rounded-md font-medium">
-                                        <i class="fa-solid fa-plus mr-1"></i> Add Medication
-                                    </button>
-                                </div>
-
-                                <!-- Prescription List Table -->
-                                <div class="border border-slate-200 rounded-md overflow-hidden mt-3">
-                                    <table class="w-full text-left text-xs">
-                                        <thead class="bg-slate-100 text-slate-700">
-                                            <tr>
-                                                <th class="p-2">Medication</th>
-                                                <th class="p-2 text-center">Qty</th>
-                                                <th class="p-2">Unit Price</th>
-                                                <th class="p-2">Total</th>
-                                                <th class="p-2 text-right">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="prescriptionsTableBody" class="divide-y divide-slate-100 bg-white">
-                                            <!-- Dynamic items -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <button onclick="handleFinalizeConsultation()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium text-xs py-3 rounded-md shadow-md flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-file-medical text-sm"></i> Complete Consultation & Discharge Patient
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= LABORATORY SECTION ================= -->
-        <section id="section-lab" class="tab-content hidden space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-microscope text-purple-600"></i> Laboratory Testing & Diagnostics
-                        </h2>
-                        <p class="text-xs text-slate-500">Process medical lab orders and publish findings back to patients' records</p>
-                    </div>
-                    <span class="text-xs bg-purple-50 text-purple-700 border border-purple-200 font-medium px-2.5 py-1 rounded-md">
-                        <i class="fa-solid fa-flask mr-1"></i> Diagnostic Lab Queue
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Pending Lab Queue -->
-                    <div class="lg:col-span-1 border border-slate-200 rounded-lg overflow-hidden bg-white flex flex-col h-[500px]">
-                        <div class="p-3 bg-slate-100 border-b border-slate-200 font-semibold text-xs text-slate-700 flex justify-between items-center">
-                            <span>Pending Lab Tests</span>
-                            <span id="labQueueCount" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-[10px]">0</span>
-                        </div>
-                        <div id="labQueueList" class="divide-y divide-slate-100 overflow-y-auto custom-scrollbar flex-grow p-2 space-y-2">
-                            <!-- Dynamic Lab items -->
-                        </div>
-                    </div>
-
-                    <!-- Lab Test Processing Form -->
-                    <div class="lg:col-span-2 bg-slate-50 p-5 rounded-lg border border-slate-200 flex flex-col justify-between">
-                        <div id="noLabSelected" class="text-center py-20 text-slate-400">
-                            <i class="fa-solid fa-vial text-4xl mb-3"></i>
-                            <p class="text-xs font-medium">Select a pending lab order to process test results</p>
-                        </div>
-
-                        <form id="labProcessingForm" onsubmit="handleSaveLabResult(event)" class="hidden space-y-5">
-                            <div class="bg-white p-3.5 rounded-md border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-slate-800 text-sm" id="labPatientName">-</h4>
-                                    <p class="text-xs text-slate-500" id="labTestNameDisplay">-</p>
-                                </div>
-                                <span class="text-xs bg-purple-100 text-purple-800 font-semibold px-2.5 py-1 rounded-md" id="labOrderIdDisplay">-</span>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Laboratory Test Findings / Results *</label>
-                                <textarea id="labResultsInput" rows="5" required placeholder="Type detailed lab analysis results (e.g. Haemoglobin: 13.5 g/dL, Parasite Density: Negative...)" class="w-full text-xs p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:outline-none"></textarea>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Lab Tech Remarks / Recommendations</label>
-                                <input type="text" id="labRemarksInput" placeholder="Optional notes for consultant..." class="w-full text-xs p-2.5 border border-slate-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                            </div>
-
-                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs py-2.5 rounded-md transition duration-150 flex items-center justify-center gap-2 shadow-sm">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Save & Auto-Sync Results to Consultant & Admin
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= ADMIN DASHBOARD SECTION ================= -->
-        <section id="section-admin" class="tab-content hidden space-y-6">
-            <!-- Director Header Badge -->
-            <div class="bg-gradient-to-r from-slate-900 to-teal-950 text-white p-5 rounded-xl shadow-md border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 class="text-xl font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-emerald-400"></i> Nevada Clinic Master Executive Dashboard
-                    </h2>
-                    <p class="text-xs text-slate-300 mt-0.5">Comprehensive real-time clinic operations, inventory control, and financial reporting.</p>
-                </div>
-                <div class="text-right border-l md:border-l border-slate-700 pl-0 md:pl-4">
-                    <span class="text-[11px] text-slate-400 block uppercase tracking-wider">Facility Director</span>
-                    <span class="text-sm font-semibold text-emerald-300">Weldon Chepkwony</span>
-                </div>
-            </div>
-
-            <!-- KPI Cards Row -->
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="text-xs text-slate-500 font-medium">Total Registered</div>
-                    <div class="text-2xl font-bold text-slate-800 mt-1" id="kpiTotalPatients">0</div>
-                    <div class="text-[11px] text-emerald-600 mt-1 flex items-center"><i class="fa-solid fa-users mr-1"></i> Patient Master</div>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="text-xs text-slate-500 font-medium">Total Patient Visits</div>
-                    <div class="text-2xl font-bold text-slate-800 mt-1" id="kpiTotalVisits">0</div>
-                    <div class="text-[11px] text-blue-600 mt-1 flex items-center"><i class="fa-solid fa-bed-pulse mr-1"></i> Active Clinical Visits</div>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="text-xs text-slate-500 font-medium">Pharmacy Items Stock</div>
-                    <div class="text-2xl font-bold text-slate-800 mt-1" id="kpiStockCount">0</div>
-                    <div class="text-[11px] text-amber-600 mt-1 flex items-center"><i class="fa-solid fa-boxes-stacked mr-1"></i> Live Inventory</div>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="text-xs text-slate-500 font-medium">Pending Lab Queue</div>
-                    <div class="text-2xl font-bold text-purple-600 mt-1" id="kpiPendingLab">0</div>
-                    <div class="text-[11px] text-purple-600 mt-1 flex items-center"><i class="fa-solid fa-hourglass-half mr-1"></i> Diagnostics</div>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 sm:col-span-1">
-                    <div class="text-xs text-slate-500 font-medium">Net Revenue (KES)</div>
-                    <div class="text-2xl font-bold text-emerald-700 mt-1" id="kpiNetRevenue">KES 0</div>
-                    <div class="text-[11px] text-emerald-600 mt-1 flex items-center"><i class="fa-solid fa-wallet mr-1"></i> Pharmacy & Services</div>
-                </div>
-            </div>
-
-            <!-- Financials & Inventory Grid -->
+        <!-- TAB 1: PATIENT INTAKE -->
+        <section id="content-intake" class="tab-content block space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Financial Chart -->
-                <div class="lg:col-span-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-chart-pie text-emerald-600"></i> Revenue Breakdown
-                        </h3>
-                        <p class="text-xs text-slate-500 mb-4">Financial metrics overview</p>
-                        <div class="relative h-48 w-full flex items-center justify-center">
-                            <canvas id="financialChart"></canvas>
+                <!-- Registration Form -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="user-plus" class="w-5 h-5 text-blue-600"></i> New Patient Triage & Intake
+                    </h2>
+                    <form id="patientForm" onsubmit="handlePatientSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Full Name</label>
+                            <input type="text" id="pName" required placeholder="e.g. Jane Doe" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-slate-100 text-xs space-y-1.5">
-                        <div class="flex justify-between text-slate-600"><span>Gross Prescriptions:</span><span font-semibold id="adminGrossRevenue">KES 0</span></div>
-                        <div class="flex justify-between text-slate-600"><span>Estimated Costs:</span><span class="text-red-500" id="adminExpenses">KES 0</span></div>
-                        <div class="flex justify-between font-bold text-slate-800 text-sm pt-1 border-t border-slate-100"><span>Net Income:</span><span class="text-emerald-600" id="adminNetProfit">KES 0</span></div>
-                    </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Age</label>
+                                <input type="number" id="pAge" required min="0" max="120" placeholder="e.g. 34" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Gender</label>
+                                <select id="pGender" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Phone Number</label>
+                            <input type="tel" id="pPhone" required placeholder="+254 700 000 000" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Initial Symptoms / Triage Note</label>
+                            <textarea id="pSymptoms" rows="3" required placeholder="Describe chief complaints..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i> Register Patient
+                        </button>
+                    </form>
                 </div>
 
-                <!-- Pharmacy Master Stock & Restock Control -->
-                <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                        <div>
-                            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                                <i class="fa-solid fa-cubes-stacked text-teal-600"></i> Pharmacy Master Inventory & Restock
-                            </h3>
-                            <p class="text-xs text-slate-500">Monitor live medicine quantities, prices, and perform restocks</p>
-                        </div>
-                        <button onclick="openAddNewDrugModal()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs px-3 py-1.5 rounded-md font-medium">
-                            <i class="fa-solid fa-plus mr-1"></i> Add New Drug
-                        </button>
+                <!-- Registered Queue -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="users" class="w-5 h-5 text-blue-600"></i> Active Patient Registry
+                        </h2>
+                        <span id="patientCountBadge" class="text-xs bg-slate-100 text-slate-700 font-semibold px-3 py-1 rounded-full border">
+                            0 Patients Listed
+                        </span>
                     </div>
-
-                    <div class="overflow-x-auto border border-slate-200 rounded-lg max-h-72 custom-scrollbar">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-100 text-slate-700 sticky top-0 font-semibold">
-                                <tr>
-                                    <th class="p-2.5">Medication Name</th>
-                                    <th class="p-2.5">Category</th>
-                                    <th class="p-2.5 text-center">In Stock</th>
-                                    <th class="p-2.5">Unit Price</th>
-                                    <th class="p-2.5">Alternative Drug</th>
-                                    <th class="p-2.5 text-right">Restock Action</th>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 border-b text-xs uppercase font-semibold">
+                                    <th class="py-3 px-4">ID</th>
+                                    <th class="py-3 px-4">Patient Name</th>
+                                    <th class="py-3 px-4">Age/Gender</th>
+                                    <th class="py-3 px-4">Symptoms</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="adminInventoryTable" class="divide-y divide-slate-100 bg-white">
-                                <!-- Dynamic Drug Stocks -->
+                            <tbody id="patientTableBody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: NURSE STATION -->
+        <section id="content-nurse" class="tab-content hidden space-y-6">
+            <div class="bg-blue-900 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i data-lucide="heart-pulse" class="w-7 h-7 text-blue-300"></i> Nurse Triage & Diagnostic Hub
+                    </h2>
+                    <p class="text-blue-200 text-sm mt-1">Review live medicine pricing inventory, order lab tests, and track lab results for active patients.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Nurse Lab Request Form -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="flask-conical" class="w-5 h-5 text-purple-600"></i> Submit Patient for Lab Test
+                    </h3>
+                    <form id="nurseLabForm" onsubmit="handleNurseLabSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Select Patient</label>
+                            <select id="nurseLabPatient" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                                <!-- Options dynamically rendered -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Required Lab Test</label>
+                            <select id="nurseLabTestType" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                                <option value="Malaria Rapid Diagnostic Test (RDT)">Malaria Rapid Diagnostic Test (RDT) - KES 500</option>
+                                <option value="Full Blood Count (FBC)">Full Blood Count (FBC) - KES 1,200</option>
+                                <option value="Urinalysis Profile">Urinalysis Profile - KES 600</option>
+                                <option value="Blood Glucose Test">Blood Glucose Test - KES 400</option>
+                                <option value="Typhoid Widal Test">Typhoid Widal Test - KES 800</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nursing / Clinical Remarks</label>
+                            <textarea id="nurseLabNotes" rows="2" placeholder="e.g. Patient experiencing high fever and fatigue..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i> Dispatch Lab Request
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Access Lab Results Section -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="file-badge-2" class="w-5 h-5 text-emerald-600"></i> Access Patient Lab Results
+                    </h3>
+                    <div class="overflow-x-auto max-h-[320px] custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="sticky top-0 bg-slate-100 text-slate-600 text-xs uppercase font-semibold">
+                                <tr>
+                                    <th class="py-2.5 px-3">Patient</th>
+                                    <th class="py-2.5 px-3">Test</th>
+                                    <th class="py-2.5 px-3">Result</th>
+                                    <th class="py-2.5 px-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nurseLabResultsBody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Detailed Medical History Lookup -->
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-folder-tree text-indigo-600"></i> Master Medical History Records Lookup
-                        </h3>
-                        <p class="text-xs text-slate-500">View complete historical patient visits, diagnosis notes, and lab logs</p>
-                    </div>
-                    <input type="text" id="adminMedicalSearch" oninput="renderAdminHistory()" placeholder="Search patient name or phone..." class="text-xs p-2 border border-slate-300 rounded-md w-full sm:w-64">
+            <!-- Medicine vs Selling Cost Inventory (Nurse Read-Only View) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="pill" class="w-5 h-5 text-blue-600"></i> Available Medicine Inventory & Unit Pricing
+                    </h3>
+                    <span class="text-xs text-slate-500 font-medium">Read-Only View for Nursing Staff</span>
                 </div>
-
-                <div class="overflow-x-auto border border-slate-200 rounded-lg">
-                    <table class="w-full text-left text-xs text-slate-600">
-                        <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 uppercase text-[11px]">
-                            <tr>
-                                <th class="p-3">Visit ID / Date</th>
-                                <th class="p-3">Patient Name</th>
-                                <th class="p-3">Vitals Logged</th>
-                                <th class="p-3">Diagnosis</th>
-                                <th class="p-3">Prescription Issued</th>
-                                <th class="p-3">Lab Results</th>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b text-xs uppercase font-semibold">
+                                <th class="py-3 px-4">Medicine Item</th>
+                                <th class="py-3 px-4">Category</th>
+                                <th class="py-3 px-4">In Stock</th>
+                                <th class="py-3 px-4">Acquisition Cost</th>
+                                <th class="py-3 px-4">Selling Price</th>
                             </tr>
                         </thead>
-                        <tbody id="adminHistoryTableBody" class="divide-y divide-slate-200 bg-white">
-                            <!-- Dynamic Medical History Logs -->
+                        <tbody id="nurseMedTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
+
+        <!-- TAB 3: CLINICAL CONSULT -->
+        <section id="content-consult" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="stethoscope" class="w-5 h-5 text-blue-600"></i> Doctor's Clinical Consultation
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Select Active Consultation -->
+                    <div class="space-y-4">
+                        <label class="block text-xs font-semibold text-slate-600 uppercase">Select Active Consultation Patient</label>
+                        <select id="consultPatientSelect" onchange="loadConsultationData()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <!-- Dynamic -->
+                        </select>
+
+                        <div id="patientDetailsCard" class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm space-y-2 hidden">
+                            <div class="font-bold text-slate-800 text-base" id="cardName">-</div>
+                            <div class="text-slate-600">Age: <span id="cardAge" class="font-medium"></span> | Gender: <span id="cardGender" class="font-medium"></span></div>
+                            <div class="text-slate-600">Triage Notes: <p id="cardSymptoms" class="font-normal italic text-slate-700 bg-white p-2 rounded border mt-1"></p></div>
+                        </div>
+                    </div>
+
+                    <!-- Diagnosis & Prescription Form -->
+                    <div class="md:col-span-2 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Clinical Diagnosis</label>
+                            <textarea id="consultDiagnosis" rows="2" placeholder="Record diagnosis, observations, or vitals..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Prescribe Medicine</label>
+                                <select id="consultMedSelect" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                    <!-- Dynamic -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Quantity</label>
+                                <input type="number" id="consultMedQty" min="1" value="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <button onclick="saveConsultation()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="file-check" class="w-4 h-4"></i> Finalize Consultation & Prescribe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LABORATORY QUEUE -->
+        <section id="content-lab" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="microscope" class="w-5 h-5 text-purple-600"></i> Laboratory Processing Queue
+                    </h2>
+                    <span class="text-xs bg-purple-50 text-purple-700 font-semibold px-3 py-1 rounded-full border border-purple-200">
+                        Lab Technician Workbench
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b text-xs uppercase font-semibold">
+                                <th class="py-3 px-4">Patient ID / Name</th>
+                                <th class="py-3 px-4">Requested Test</th>
+                                <th class="py-3 px-4">Requested By</th>
+                                <th class="py-3 px-4">Notes</th>
+                                <th class="py-3 px-4">Result Status</th>
+                                <th class="py-3 px-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="labQueueTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: PHARMACY & STOCK -->
+        <section id="content-pharmacy" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="package" class="w-5 h-5 text-blue-600"></i> Pharmacy & Stock Inventory
+                        </h2>
+                        <p class="text-xs text-slate-500">Monitor stock levels, costs, and selling values.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b text-xs uppercase font-semibold">
+                                <th class="py-3 px-4">Item ID</th>
+                                <th class="py-3 px-4">Medicine Name</th>
+                                <th class="py-3 px-4">Category</th>
+                                <th class="py-3 px-4">Stock Level</th>
+                                <th class="py-3 px-4">Unit Cost (KES)</th>
+                                <th class="py-3 px-4">Selling Price (KES)</th>
+                                <th class="py-3 px-4">Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pharmacyStockTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: FINANCIAL OVERVIEW -->
+        <section id="content-financial" class="tab-content hidden space-y-6">
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-semibold text-slate-500 uppercase">Total Revenue</span>
+                    <div class="text-2xl font-bold text-slate-900 mt-1" id="statRevenue">KES 0</div>
+                    <span class="text-xs text-emerald-600 font-medium">From consultations & labs</span>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-semibold text-slate-500 uppercase">Inventory Value</span>
+                    <div class="text-2xl font-bold text-slate-900 mt-1" id="statInventoryValue">KES 0</div>
+                    <span class="text-xs text-blue-600 font-medium">At current selling prices</span>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-semibold text-slate-500 uppercase">Total Patients</span>
+                    <div class="text-2xl font-bold text-slate-900 mt-1" id="statPatientCount">0</div>
+                    <span class="text-xs text-purple-600 font-medium">Registered in system</span>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-semibold text-slate-500 uppercase">Staff On Active Roster</span>
+                    <div class="text-2xl font-bold text-slate-900 mt-1" id="statStaffCount">0</div>
+                    <span class="text-xs text-amber-600 font-medium">Nevada Clinic Directory</span>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-slate-900 mb-4">Stock Valuation Chart</h3>
+                    <div class="h-64">
+                        <canvas id="stockChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-slate-900 mb-4">Role Distribution Chart</h3>
+                    <div class="h-64">
+                        <canvas id="roleChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 7: ADMIN CONTROL -->
+        <section id="content-admin" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-md border border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Super Administrator Hub</span>
+                        <h2 class="text-2xl font-bold mt-1">Nevada Clinic Control Console</h2>
+                        <p class="text-xs text-slate-400 mt-1">Administrator: <span class="text-white font-semibold">Weldon Chepkwony</span></p>
+                    </div>
+                    <i data-lucide="shield" class="w-10 h-10 text-blue-500 opacity-80"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Staff Registration & Directory -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="user-check" class="w-5 h-5 text-blue-600"></i> Register New Staff
+                    </h3>
+                    <form id="staffRegisterForm" onsubmit="handleStaffRegister(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Full Name</label>
+                            <input type="text" id="staffName" required placeholder="e.g. Dr. John Kiprop" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email Address</label>
+                            <input type="email" id="staffEmail" required placeholder="staff@nevadaclinic.com" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Assigned Role</label>
+                            <select id="staffRole" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="Nurse">Nurse</option>
+                                <option value="Consultant">Consultant Doctor</option>
+                                <option value="Lab Technician">Lab Technician</option>
+                                <option value="Registration Staff">Registration Staff</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Staff Member
+                        </button>
+                    </form>
+
+                    <!-- Staff List Table -->
+                    <div class="mt-6">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Current Staff Directory</h4>
+                        <div class="overflow-x-auto max-h-[220px] custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+                                    <tr>
+                                        <th class="py-2 px-3">Name</th>
+                                        <th class="py-2 px-3">Role</th>
+                                        <th class="py-2 px-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffDirectoryBody" class="divide-y divide-slate-100">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fix & Adjust Prices of Medicines -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="tag" class="w-5 h-5 text-emerald-600"></i> Fix & Adjust Prices of Medicine
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Modify acquisition costs and selling prices for stock items across Nevada Clinic inventory.</p>
+
+                    <div class="overflow-x-auto max-h-[420px] custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="sticky top-0 bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <tr>
+                                    <th class="py-2 px-3">Medicine</th>
+                                    <th class="py-2 px-3">Cost (KES)</th>
+                                    <th class="py-2 px-3">Price (KES)</th>
+                                    <th class="py-2 px-3 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminPriceAdjustBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
-
-    <!-- Add New Drug Modal -->
-    <div id="addDrugModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-pills text-teal-600 mr-1"></i> Add New Pharmaceutical Drug</h3>
-                <button onclick="closeAddNewDrugModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="handleAddNewDrug(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Drug Name</label>
-                    <input type="text" id="newDrugName" required placeholder="e.g. Amoxicillin 500mg" class="w-full text-xs p-2 border border-slate-300 rounded-md">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Category</label>
-                    <input type="text" id="newDrugCategory" placeholder="e.g. Antibiotics" class="w-full text-xs p-2 border border-slate-300 rounded-md">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Initial Stock Qty</label>
-                        <input type="number" id="newDrugStock" min="0" required value="50" class="w-full text-xs p-2 border border-slate-300 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Unit Price (KES)</label>
-                        <input type="number" id="newDrugPrice" min="1" required value="100" class="w-full text-xs p-2 border border-slate-300 rounded-md">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Alternative Drug Suggestion</label>
-                    <input type="text" id="newDrugAlt" placeholder="e.g. Augmentin 625mg" class="w-full text-xs p-2 border border-slate-300 rounded-md">
-                </div>
-                <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs py-2 rounded-md">
-                    Save Medicine to Inventory
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Application Footer -->
-    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div>
-                <strong>Nevada Clinic</strong> Management Portal &copy; 2026. All rights reserved.
-            </div>
-            <div class="italic">
-                "We Care, God Heals" &bull; Facility Director: Weldon Chepkwony
-            </div>
-        </div>
-    </footer>
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Role Access Mapping Rules
-        const ROLE_PERMISSIONS = {
-            'REGISTRATION': ['registration', 'nurse', 'consultant', 'lab'],
-            'NURSE': ['nurse'],
-            'CONSULTANT': ['nurse', 'consultant'],
-            'LAB_TECH': ['lab'],
-            'ADMIN': ['registration', 'nurse', 'consultant', 'lab', 'admin']
-        };
+        // Global Application State Data
+        let currentRole = "Admin";
+        let currentTab = "intake";
 
-        const TAB_DEFINITIONS = [
-            { id: 'registration', label: 'Patient Registration', icon: 'fa-id-card' },
-            { id: 'nurse', label: 'Nurse Station / Triage', icon: 'fa-user-nurse' },
-            { id: 'consultant', label: 'Doctor Consultation', icon: 'fa-user-md' },
-            { id: 'lab', label: 'Laboratory Queue', icon: 'fa-microscope' },
-            { id: 'admin', label: 'Admin Master Panel', icon: 'fa-chart-line' }
+        let staffDirectory = [
+            { id: 1, name: "Weldon Chepkwony", email: "weldon@nevadaclinic.com", role: "Admin", status: "Active" },
+            { id: 2, name: "Sarah Mercy", email: "sarah@nevadaclinic.com", role: "Nurse", status: "Active" },
+            { id: 3, name: "Dr. Evans Cheruiyot", email: "evans@nevadaclinic.com", role: "Consultant", status: "Active" },
+            { id: 4, name: "David Koech", email: "david@nevadaclinic.com", role: "Lab Technician", status: "Active" },
+            { id: 5, name: "Grace Langat", email: "grace@nevadaclinic.com", role: "Registration Staff", status: "Active" }
         ];
 
-        // Central State Store
-        let currentRole = 'ADMIN';
-        let activeTab = 'admin';
+        let medicines = [
+            { id: "MED01", name: "Paracetamol 500mg", category: "Analgesic", stock: 250, costPrice: 15, sellingPrice: 40 },
+            { id: "MED02", name: "Amoxicillin 500mg", category: "Antibiotic", stock: 120, costPrice: 80, sellingPrice: 150 },
+            { id: "MED03", name: "Artemether/Lumefantrine", category: "Antimalarial", stock: 85, costPrice: 350, sellingPrice: 650 },
+            { id: "MED04", name: "Ibuprofen 400mg", category: "NSAID", stock: 190, costPrice: 25, sellingPrice: 60 },
+            { id: "MED05", name: "Omeprazole 20mg", category: "Antacid", stock: 95, costPrice: 90, sellingPrice: 200 }
+        ];
 
-        // Pre-loaded Mock Data
         let patients = [
-            { id: 'NC-1001', name: 'Mary Wanjiku', phone: '0712345678', age: 34, gender: 'Female', visitsCount: 1 },
-            { id: 'NC-1002', name: 'John Kiprop', phone: '0722987654', age: 42, gender: 'Male', visitsCount: 1 },
-            { id: 'NC-1003', name: 'Grace Omondi', phone: '0733112233', age: 28, gender: 'Female', visitsCount: 1 }
-        ];
-
-        let inventory = [
-            { id: 'MED-1', name: 'Paracetamol 500mg', category: 'Analgesic', stock: 120, price: 15, alt: 'Ibuprofen 400mg' },
-            { id: 'MED-2', name: 'Amoxicillin 500mg', category: 'Antibiotic', stock: 8, price: 40, alt: 'Azithromycin 500mg' },
-            { id: 'MED-3', name: 'Artemether/Lumefantrine (Coartem)', category: 'Antimalarial', stock: 45, price: 250, alt: 'Dihydroartemisinin' },
-            { id: 'MED-4', name: 'Omeprazole 20mg', category: 'Gastrointestinal', stock: 0, price: 30, alt: 'Esomeprazole 20mg' },
-            { id: 'MED-5', name: 'Cetirizine 10mg', category: 'Antihistamine', stock: 85, price: 10, alt: 'Loratadine 10mg' }
-        ];
-
-        let visits = [
-            {
-                visitId: 'VST-5001',
-                patientId: 'NC-1001',
-                patientName: 'Mary Wanjiku',
-                patientPhone: '0712345678',
-                reason: 'High fever and bodily fatigue',
-                date: '2026-10-07 09:15',
-                vitals: { bp: '130/85', temp: '38.4', pulse: '88', weight: '62', notes: 'Patient complains of severe headache.' },
-                status: 'CONSULTATION_PENDING', // REGISTRATION -> TRIAGE_PENDING -> CONSULTATION_PENDING -> COMPLETED
-                diagnosis: '',
-                prescriptions: [],
-                labOrders: []
-            },
-            {
-                visitId: 'VST-5002',
-                patientId: 'NC-1002',
-                patientName: 'John Kiprop',
-                patientPhone: '0722987654',
-                reason: 'Routine checkup and cough',
-                date: '2026-10-07 10:00',
-                vitals: { bp: '120/80', temp: '36.6', pulse: '70', weight: '78', notes: 'Normal vitals.' },
-                status: 'COMPLETED',
-                diagnosis: 'Mild upper respiratory tract infection',
-                prescriptions: [{ drugName: 'Cetirizine 10mg', qty: 10, unitPrice: 10, totalCost: 100 }],
-                labOrders: []
-            }
+            { id: "PAT-101", name: "Alice Rotich", age: 29, gender: "Female", phone: "+254 711 222 333", symptoms: "High fever and joint pain", status: "Pending Consult", labTest: "Malaria Rapid Diagnostic Test (RDT)", labResult: "Positive (P. falciparum)", labStatus: "Completed" },
+            { id: "PAT-102", name: "Bernard Lagat", age: 45, gender: "Male", phone: "+254 722 333 444", symptoms: "Persistent cough and headache", status: "Pending Consult", labTest: "Full Blood Count (FBC)", labResult: "Normal Range", labStatus: "Completed" }
         ];
 
         let labQueue = [
-            {
-                orderId: 'LAB-9001',
-                visitId: 'VST-5001',
-                patientName: 'Mary Wanjiku',
-                testName: 'Malaria BS Test',
-                status: 'PENDING',
-                results: '',
-                remarks: ''
-            }
+            { id: "LAB-501", patientId: "PAT-101", patientName: "Alice Rotich", testType: "Malaria Rapid Diagnostic Test (RDT)", notes: "Nurse order: Fever 38.5C", result: "Positive (P. falciparum)", status: "Completed" },
+            { id: "LAB-502", patientId: "PAT-102", patientName: "Bernard Lagat", testType: "Full Blood Count (FBC)", notes: "Routine screening", result: "Normal Range", status: "Completed" }
         ];
 
-        let selectedTriageVisitId = null;
-        let selectedConsultVisitId = null;
-        let selectedLabOrderId = null;
-        let currentConsultPrescriptions = [];
-        let financialChartInstance = null;
+        let revenue = 3200;
 
-        window.onload = function() {
-            switchRole('ADMIN');
-            renderInventoryTable();
-            renderAdminHistory();
-            initFinancialChart();
-            updateKPIs();
+        let stockChartInstance = null;
+        let roleChartInstance = null;
+
+        // Role Permission Matrix Configuration
+        const rolePermissions = {
+            "Admin": ["intake", "nurse", "consult", "lab", "pharmacy", "financial", "admin"],
+            "Registration Staff": ["intake", "nurse", "consult", "lab", "pharmacy", "financial", "admin"], // Specified full navigation access
+            "Nurse": ["intake", "nurse", "pharmacy"],
+            "Consultant": ["intake", "consult", "pharmacy"],
+            "Lab Technician": ["lab", "pharmacy"]
         };
 
-        function switchRole(newRole) {
-            currentRole = newRole;
-            const allowedTabs = ROLE_PERMISSIONS[currentRole];
-
-            // Default to first allowed tab
-            activeTab = allowedTabs[0];
-
-            renderNavigationTabs();
-            renderTabContent();
-            showToast(`Switched role to ${newRole.replace('_', ' ')}`, 'info');
-        }
-
-        function renderNavigationTabs() {
-            const navContainer = document.getElementById('navigationTabs');
-            const allowedTabs = ROLE_PERMISSIONS[currentRole];
-
-            navContainer.innerHTML = TAB_DEFINITIONS
-                .filter(tab => allowedTabs.includes(tab.id))
-                .map(tab => {
-                    const isActive = tab.id === activeTab;
-                    const activeClasses = isActive 
-                        ? 'bg-teal-700 text-white font-semibold shadow-sm' 
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium';
-                    return `
-                        <button onclick="setActiveTab('${tab.id}')" class="px-3.5 py-2 rounded-lg text-xs flex items-center gap-2 whitespace-nowrap transition duration-150 ${activeClasses}">
-                            <i class="fa-solid ${tab.icon}"></i>
-                            <span>${tab.label}</span>
-                        </button>
-                    `;
-                }).join('');
-        }
-
-        function setActiveTab(tabId) {
-            activeTab = tabId;
-            renderNavigationTabs();
-            renderTabContent();
-        }
-
-        function renderTabContent() {
-            // Hide all tab sections
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-
-            // Show active tab section
-            const activeEl = document.getElementById(`section-${activeTab}`);
-            if (activeEl) {
-                activeEl.classList.remove('hidden');
-            }
-
-            // Refresh tab specific views
-            if (activeTab === 'registration') renderPatientsTable();
-            if (activeTab === 'nurse') renderTriageQueue();
-            if (activeTab === 'consultant') { renderConsultQueue(); populatePrescDrugDropdown(); }
-            if (activeTab === 'lab') renderLabQueue();
-            if (activeTab === 'admin') { renderInventoryTable(); renderAdminHistory(); updateKPIs(); }
-        }
-
-        function handlePatientRegistration(e) {
-            e.preventDefault();
-            const name = document.getElementById('regFullName').value.trim();
-            const phone = document.getElementById('regPhone').value.trim();
-            const age = parseInt(document.getElementById('regAge').value);
-            const gender = document.getElementById('regGender').value;
-            const reason = document.getElementById('regReason').value.trim() || 'General Consultation';
-
-            let existingPatient = patients.find(p => p.phone === phone);
-            let patientId = '';
-
-            if (existingPatient) {
-                existingPatient.visitsCount += 1;
-                patientId = existingPatient.id;
-            } else {
-                patientId = `NC-${1000 + patients.length + 1}`;
-                existingPatient = {
-                    id: patientId,
-                    name: name,
-                    phone: phone,
-                    age: age,
-                    gender: gender,
-                    visitsCount: 1
-                };
-                patients.push(existingPatient);
-            }
-
-            // Create new Visit queued for Nurse Triage
-            const newVisit = {
-                visitId: `VST-${5000 + visits.length + 1}`,
-                patientId: patientId,
-                patientName: name,
-                patientPhone: phone,
-                reason: reason,
-                date: new Date().toLocaleString(),
-                vitals: null,
-                status: 'TRIAGE_PENDING',
-                diagnosis: '',
-                prescriptions: [],
-                labOrders: []
-            };
-
-            visits.push(newVisit);
-            document.getElementById('patientRegistrationForm').reset();
-            renderPatientsTable();
-            updateKPIs();
-            showToast(`Patient ${name} registered & added to Triage Queue!`, 'success');
-        }
-
-        function renderPatientsTable() {
-            const query = document.getElementById('patientSearchInput').value.toLowerCase();
-            const tbody = document.getElementById('patientsTableBody');
-            document.getElementById('patientCountBadge').innerText = `${patients.length} registered patients`;
-
-            const filtered = patients.filter(p => 
-                p.name.toLowerCase().includes(query) || 
-                p.phone.includes(query) || 
-                p.id.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No matching patient records found</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = filtered.map(p => `
-                <tr class="hover:bg-slate-50 border-b border-slate-100">
-                    <td class="p-3 font-semibold text-teal-700">${p.id}</td>
-                    <td class="p-3 font-medium text-slate-800">${p.name}</td>
-                    <td class="p-3">${p.phone}</td>
-                    <td class="p-3">${p.age} yrs / ${p.gender}</td>
-                    <td class="p-3 text-center"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-bold text-[11px]">${p.visitsCount}</span></td>
-                    <td class="p-3"><span class="text-xs text-emerald-600 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i> Active</span></td>
-                    <td class="p-3 text-right">
-                        <button onclick="quickRequeue('${p.id}')" class="bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-[11px] font-semibold px-2.5 py-1 rounded-md">
-                            + New Visit
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function quickRequeue(patientId) {
-            const patient = patients.find(p => p.id === patientId);
-            if (!patient) return;
-
-            patient.visitsCount += 1;
-            const newVisit = {
-                visitId: `VST-${5000 + visits.length + 1}`,
-                patientId: patient.id,
-                patientName: patient.name,
-                patientPhone: patient.phone,
-                reason: 'Follow-up / Re-visit',
-                date: new Date().toLocaleString(),
-                vitals: null,
-                status: 'TRIAGE_PENDING',
-                diagnosis: '',
-                prescriptions: [],
-                labOrders: []
-            };
-
-            visits.push(newVisit);
-            renderPatientsTable();
-            updateKPIs();
-            showToast(`Created new visit for ${patient.name}! Queued to Nurse Triage.`, 'success');
-        }
-
-        function renderTriageQueue() {
-            const container = document.getElementById('triageQueueList');
-            const pendingVisits = visits.filter(v => v.status === 'TRIAGE_PENDING');
-            document.getElementById('triageQueueCount').innerText = pendingVisits.length;
-
-            if (pendingVisits.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">No patients waiting for triage.</div>`;
-                return;
-            }
-
-            container.innerHTML = pendingVisits.map(v => `
-                <div onclick="selectTriagePatient('${v.visitId}')" class="p-3 rounded-lg border transition duration-150 cursor-pointer ${selectedTriageVisitId === v.visitId ? 'bg-amber-50 border-amber-300 ring-1 ring-amber-400' : 'bg-slate-50 hover:bg-slate-100 border-slate-200'}">
-                    <div class="flex justify-between items-start">
-                        <h5 class="font-bold text-xs text-slate-800">${v.patientName}</h5>
-                        <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">${v.patientId}</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 mt-1 truncate"><strong>Reason:</strong> ${v.reason}</p>
-                    <span class="text-[10px] text-amber-700 mt-1 inline-block"><i class="fa-solid fa-clock mr-1"></i> Awaiting Vitals</span>
-                </div>
-            `).join('');
-        }
-
-        function selectTriagePatient(visitId) {
-            selectedTriageVisitId = visitId;
-            renderTriageQueue();
-
-            const visit = visits.find(v => v.visitId === visitId);
-            if (!visit) return;
-
-            document.getElementById('noPatientSelectedTriage').classList.add('hidden');
-            const form = document.getElementById('vitalsForm');
-            form.classList.remove('hidden');
-
-            document.getElementById('selectedTriagePatientName').innerText = visit.patientName;
-            document.getElementById('selectedTriagePatientInfo').innerText = `Phone: ${visit.patientPhone} | Reason: ${visit.reason}`;
-            document.getElementById('selectedTriagePatientId').innerText = visit.patientId;
-        }
-
-        function handleSaveVitals(e) {
-            e.preventDefault();
-            if (!selectedTriageVisitId) return;
-
-            const visit = visits.find(v => v.visitId === selectedTriageVisitId);
-            if (!visit) return;
-
-            visit.vitals = {
-                bp: document.getElementById('vitalBP').value,
-                temp: document.getElementById('vitalTemp').value,
-                pulse: document.getElementById('vitalPulse').value,
-                weight: document.getElementById('vitalWeight').value,
-                notes: document.getElementById('vitalNotes').value
-            };
-            visit.status = 'CONSULTATION_PENDING';
-
-            document.getElementById('vitalsForm').reset();
-            document.getElementById('vitalsForm').classList.add('hidden');
-            document.getElementById('noPatientSelectedTriage').classList.remove('hidden');
-            selectedTriageVisitId = null;
-
-            renderTriageQueue();
-            showToast(`Vitals logged for ${visit.patientName}. Transferred to Doctor!`, 'success');
-        }
-
-        function renderConsultQueue() {
-            const container = document.getElementById('consultQueueList');
-            const consultVisits = visits.filter(v => v.status === 'CONSULTATION_PENDING');
-            document.getElementById('consultQueueCount').innerText = consultVisits.length;
-
-            if (consultVisits.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">No patients waiting for doctor.</div>`;
-                return;
-            }
-
-            container.innerHTML = consultVisits.map(v => `
-                <div onclick="selectConsultPatient('${v.visitId}')" class="p-3 rounded-lg border transition duration-150 cursor-pointer ${selectedConsultVisitId === v.visitId ? 'bg-blue-50 border-blue-300 ring-1 ring-blue-400' : 'bg-slate-50 hover:bg-slate-100 border-slate-200'}">
-                    <div class="flex justify-between items-start">
-                        <h5 class="font-bold text-xs text-slate-800">${v.patientName}</h5>
-                        <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">${v.patientId}</span>
-                    </div>
-                    <p class="text-[11px] text-slate-600 mt-1"><strong>BP:</strong> ${v.vitals ? v.vitals.bp : 'N/A'} | <strong>Temp:</strong> ${v.vitals ? v.vitals.temp : 'N/A'}°C</p>
-                </div>
-            `).join('');
-        }
-
-        function selectConsultPatient(visitId) {
-            selectedConsultVisitId = visitId;
-            renderConsultQueue();
-
-            const visit = visits.find(v => v.visitId === visitId);
-            if (!visit) return;
-
-            document.getElementById('noPatientSelectedConsult').classList.add('hidden');
-            document.getElementById('consultationPanel').classList.remove('hidden');
-
-            document.getElementById('consultPatientName').innerText = visit.patientName;
-            document.getElementById('consultPatientDetails').innerText = `ID: ${visit.patientId} | Phone: ${visit.patientPhone}`;
-            document.getElementById('consultPatientReason').innerText = visit.reason;
-
-            if (visit.vitals) {
-                document.getElementById('consultBP').innerText = visit.vitals.bp;
-                document.getElementById('consultTemp').innerText = `${visit.vitals.temp} °C`;
-                document.getElementById('consultPulse').innerText = `${visit.vitals.pulse} bpm`;
-                document.getElementById('consultWeight').innerText = `${visit.vitals.weight} kg`;
-            }
-
-            document.getElementById('consultDiagnosis').value = visit.diagnosis || '';
-            currentConsultPrescriptions = [...visit.prescriptions];
-            renderConsultPrescriptionsTable();
-            renderConsultLabResultsDisplay();
-        }
-
-        function populatePrescDrugDropdown() {
-            const select = document.getElementById('prescDrugSelect');
-            select.innerHTML = '<option value="">-- Select Drug --</option>' + 
-                inventory.map(med => `<option value="${med.id}">${med.name} (Stock: ${med.stock}) - KES ${med.price}</option>`).join('');
-        }
-
-        function updatePrescDrugPrice() {
-            const drugId = document.getElementById('prescDrugSelect').value;
-            const stockAlert = document.getElementById('drugStockAlert');
-            const drug = inventory.find(i => i.id === drugId);
-
-            if (!drug) {
-                stockAlert.classList.add('hidden');
-                document.getElementById('prescUnitPrice').innerText = 'KES 0';
-                calculatePrescCost();
-                return;
-            }
-
-            document.getElementById('prescUnitPrice').innerText = `KES ${drug.price}`;
-            calculatePrescCost();
-
-            // Check Stock Status & Suggest Alternatives
-            stockAlert.classList.remove('hidden');
-            if (drug.stock === 0) {
-                stockAlert.className = 'text-xs p-2.5 rounded-md border bg-red-50 border-red-200 text-red-800 flex justify-between items-center';
-                stockAlert.innerHTML = `
-                    <span><i class="fa-solid fa-triangle-exclamation mr-1"></i> <strong>OUT OF STOCK!</strong> Suggested Alt: <strong>${drug.alt}</strong></span>
-                `;
-            } else if (drug.stock <= 10) {
-                stockAlert.className = 'text-xs p-2.5 rounded-md border bg-amber-50 border-amber-200 text-amber-800 flex justify-between items-center';
-                stockAlert.innerHTML = `
-                    <span><i class="fa-solid fa-circle-exclamation mr-1"></i> <strong>Low Stock Warning (${drug.stock} left)</strong>. Alt: <strong>${drug.alt}</strong></span>
-                `;
-            } else {
-                stockAlert.className = 'text-xs p-2.5 rounded-md border bg-emerald-50 border-emerald-200 text-emerald-800 flex justify-between items-center';
-                stockAlert.innerHTML = `
-                    <span><i class="fa-solid fa-check-circle mr-1 text-emerald-600"></i> Stock available: ${drug.stock} units</span>
-                `;
-            }
-        }
-
-        function calculatePrescCost() {
-            const drugId = document.getElementById('prescDrugSelect').value;
-            const qty = parseInt(document.getElementById('prescQty').value) || 0;
-            const drug = inventory.find(i => i.id === drugId);
-            const unitPrice = drug ? drug.price : 0;
-            document.getElementById('prescTotalCost').innerText = `KES ${unitPrice * qty}`;
-        }
-
-        function addPrescriptionItem() {
-            const drugId = document.getElementById('prescDrugSelect').value;
-            const qty = parseInt(document.getElementById('prescQty').value) || 0;
-
-            if (!drugId || qty <= 0) {
-                showToast('Please select a drug and enter valid quantity', 'warning');
-                return;
-            }
-
-            const drug = inventory.find(i => i.id === drugId);
-            if (!drug) return;
-
-            if (drug.stock < qty) {
-                showToast(`Insufficient stock! Only ${drug.stock} units available.`, 'error');
-                return;
-            }
-
-            currentConsultPrescriptions.push({
-                drugId: drug.id,
-                drugName: drug.name,
-                qty: qty,
-                unitPrice: drug.price,
-                totalCost: drug.price * qty
-            });
-
-            renderConsultPrescriptionsTable();
-            showToast(`Added ${drug.name} to prescription list`, 'success');
-        }
-
-        function removePrescriptionItem(index) {
-            currentConsultPrescriptions.splice(index, 1);
-            renderConsultPrescriptionsTable();
-        }
-
-        function renderConsultPrescriptionsTable() {
-            const tbody = document.getElementById('prescriptionsTableBody');
-            if (currentConsultPrescriptions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-400">No medications added yet</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = currentConsultPrescriptions.map((item, index) => `
-                <tr>
-                    <td class="p-2 font-medium text-slate-800">${item.drugName}</td>
-                    <td class="p-2 text-center font-bold">${item.qty}</td>
-                    <td class="p-2">KES ${item.unitPrice}</td>
-                    <td class="p-2 font-semibold text-teal-700">KES ${item.totalCost}</td>
-                    <td class="p-2 text-right">
-                        <button onclick="removePrescriptionItem(${index})" class="text-red-500 hover:text-red-700 text-xs">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function addLabTestOrder() {
-            if (!selectedConsultVisitId) return;
-
-            const testSelect = document.getElementById('labTestSelect');
-            const testName = testSelect.value;
-
-            if (!testName) {
-                showToast('Please select a laboratory test', 'warning');
-                return;
-            }
-
-            const visit = visits.find(v => v.visitId === selectedConsultVisitId);
-            if (!visit) return;
-
-            const newLabOrder = {
-                orderId: `LAB-${9000 + labQueue.length + 1}`,
-                visitId: visit.visitId,
-                patientName: visit.patientName,
-                testName: testName,
-                status: 'PENDING',
-                results: '',
-                remarks: ''
-            };
-
-            labQueue.push(newLabOrder);
-            visit.labOrders.push(newLabOrder);
-            testSelect.value = '';
-
-            renderConsultLabResultsDisplay();
-            updateKPIs();
-            showToast(`Ordered ${testName}! Added to Laboratory Queue.`, 'success');
-        }
-
-        function renderConsultLabResultsDisplay() {
-            const display = document.getElementById('consultLabResultsDisplay');
-            if (!selectedConsultVisitId) return;
-
-            const visitLabOrders = labQueue.filter(l => l.visitId === selectedConsultVisitId);
-
-            if (visitLabOrders.length === 0) {
-                display.innerHTML = `<span class="text-slate-400 italic">No lab tests ordered for this visit.</span>`;
-                return;
-            }
-
-            display.innerHTML = '<strong class="block mb-1 text-slate-700">Ordered Lab Tests:</strong>' + 
-                visitLabOrders.map(lab => `
-                    <div class="p-2 bg-slate-50 border rounded-md mb-1.5 flex justify-between items-start">
-                        <div>
-                            <span class="font-semibold text-purple-800">${lab.testName}</span>
-                            <div class="text-[11px] text-slate-600 mt-0.5">
-                                ${lab.status === 'COMPLETED' ? `<strong class="text-emerald-700">Result:</strong> ${lab.results}` : '<span class="text-amber-600 italic">Pending Lab Tech Processing...</span>'}
-                            </div>
-                        </div>
-                        <span class="text-[10px] px-2 py-0.5 rounded font-bold ${lab.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${lab.status}</span>
-                    </div>
-                `).join('');
-        }
-
-        function handleFinalizeConsultation() {
-            if (!selectedConsultVisitId) return;
-
-            const visit = visits.find(v => v.visitId === selectedConsultVisitId);
-            if (!visit) return;
-
-            const diagnosis = document.getElementById('consultDiagnosis').value.trim();
-            if (!diagnosis) {
-                showToast('Please enter doctor diagnosis clinical notes', 'warning');
-                return;
-            }
-
-            // Deduct medication stock from pharmacy
-            currentConsultPrescriptions.forEach(p => {
-                const drug = inventory.find(i => i.id === p.drugId);
-                if (drug) {
-                    drug.stock = Math.max(0, drug.stock - p.qty);
+        // Window Load Initialization
+        window.onload = function() {
+            lucide.createIcons();
+            switchRole("Admin");
+            renderAll();
+            initCharts();
+        };
+
+        // Role Switch Logic
+        function switchRole(role) {
+            currentRole = role;
+            const badge = document.getElementById("roleBadge");
+            badge.textContent = role + " Mode";
+
+            // Enforce Tab Visibility based on Role Permissions
+            const allowedTabs = rolePermissions[role] || [];
+            const tabs = ["intake", "nurse", "consult", "lab", "pharmacy", "financial", "admin"];
+
+            tabs.forEach(tab => {
+                const tabElem = document.getElementById("tab-" + tab);
+                if (allowedTabs.includes(tab)) {
+                    tabElem.classList.remove("hidden");
+                } else {
+                    tabElem.classList.add("hidden");
                 }
             });
 
-            visit.diagnosis = diagnosis;
-            visit.prescriptions = [...currentConsultPrescriptions];
-            visit.status = 'COMPLETED';
-
-            document.getElementById('consultationPanel').classList.add('hidden');
-            document.getElementById('noPatientSelectedConsult').classList.remove('hidden');
-            selectedConsultVisitId = null;
-
-            renderConsultQueue();
-            renderInventoryTable();
-            populatePrescDrugDropdown();
-            updateKPIs();
-            showToast(`Consultation completed & patient discharged successfully!`, 'success');
-        }
-
-        function renderLabQueue() {
-            const container = document.getElementById('labQueueList');
-            const pendingLabs = labQueue.filter(l => l.status === 'PENDING');
-            document.getElementById('labQueueCount').innerText = pendingLabs.length;
-
-            if (pendingLabs.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">No pending lab orders in queue.</div>`;
-                return;
+            // Switch to first allowed tab if current tab is forbidden
+            if (!allowedTabs.includes(currentTab)) {
+                switchTab(allowedTabs[0]);
             }
 
-            container.innerHTML = pendingLabs.map(l => `
-                <div onclick="selectLabOrder('${l.orderId}')" class="p-3 rounded-lg border transition duration-150 cursor-pointer ${selectedLabOrderId === l.orderId ? 'bg-purple-50 border-purple-300 ring-1 ring-purple-400' : 'bg-slate-50 hover:bg-slate-100 border-slate-200'}">
-                    <div class="flex justify-between items-start">
-                        <h5 class="font-bold text-xs text-slate-800">${l.patientName}</h5>
-                        <span class="text-[10px] bg-purple-100 text-purple-800 font-semibold px-1.5 py-0.5 rounded">${l.orderId}</span>
-                    </div>
-                    <p class="text-[11px] text-purple-700 font-medium mt-1"><i class="fa-solid fa-vial mr-1"></i> ${l.testName}</p>
-                </div>
+            showAlert(`Switched active perspective to ${role}`, "info");
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            currentTab = tabId;
+            const tabs = document.querySelectorAll(".nav-tab");
+            const contents = document.querySelectorAll(".tab-content");
+
+            tabs.forEach(t => {
+                t.classList.remove("tab-active");
+                t.classList.add("text-slate-600");
+            });
+
+            contents.forEach(c => c.classList.add("hidden"));
+
+            const activeBtn = document.getElementById("tab-" + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add("tab-active");
+                activeBtn.classList.remove("text-slate-600");
+            }
+
+            const activeContent = document.getElementById("content-" + tabId);
+            if (activeContent) {
+                activeContent.classList.remove("hidden");
+            }
+
+            // Refresh charts when financial tab opened
+            if (tabId === 'financial') {
+                updateCharts();
+            }
+        }
+
+        // Master Render Function
+        function renderAll() {
+            renderPatients();
+            renderNurseView();
+            renderConsultView();
+            renderLabQueue();
+            renderPharmacyStock();
+            renderAdminView();
+            updateFinancialStats();
+        }
+
+        // Alert Helper
+        function showAlert(msg, type = "info") {
+            const container = document.getElementById("alertContainer");
+            const box = document.getElementById("alertBox");
+            const message = document.getElementById("alertMessage");
+
+            container.classList.remove("hidden");
+            message.textContent = msg;
+
+            if (type === "success") {
+                box.className = "p-4 rounded-xl border flex items-center justify-between shadow-sm bg-emerald-50 text-emerald-800 border-emerald-200";
+            } else if (type === "warning") {
+                box.className = "p-4 rounded-xl border flex items-center justify-between shadow-sm bg-amber-50 text-amber-800 border-amber-200";
+            } else {
+                box.className = "p-4 rounded-xl border flex items-center justify-between shadow-sm bg-blue-50 text-blue-800 border-blue-200";
+            }
+        }
+
+        function dismissAlert() {
+            document.getElementById("alertContainer").classList.add("hidden");
+        }
+
+        // Render Patient Registry
+        function renderPatients() {
+            const tbody = document.getElementById("patientTableBody");
+            const badge = document.getElementById("patientCountBadge");
+            badge.textContent = `${patients.length} Patients Listed`;
+
+            tbody.innerHTML = patients.map(p => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-3 px-4 font-mono text-xs font-semibold text-slate-500">${p.id}</td>
+                    <td class="py-3 px-4 font-medium text-slate-900">${p.name}</td>
+                    <td class="py-3 px-4 text-slate-600">${p.age} yrs / ${p.gender}</td>
+                    <td class="py-3 px-4 text-slate-600 max-w-xs truncate">${p.symptoms}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2.5 py-1 text-xs rounded-full font-semibold ${
+                            p.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                        }">${p.status}</span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="switchTab('nurse')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md font-medium">Triage</button>
+                    </td>
+                </tr>
             `).join('');
         }
 
-        function selectLabOrder(orderId) {
-            selectedLabOrderId = orderId;
-            renderLabQueue();
-
-            const order = labQueue.find(l => l.orderId === orderId);
-            if (!order) return;
-
-            document.getElementById('noLabSelected').classList.add('hidden');
-            const form = document.getElementById('labProcessingForm');
-            form.classList.remove('hidden');
-
-            document.getElementById('labPatientName').innerText = order.patientName;
-            document.getElementById('labTestNameDisplay').innerText = `Test Required: ${order.testName}`;
-            document.getElementById('labOrderIdDisplay').innerText = order.orderId;
-        }
-
-        function handleSaveLabResult(e) {
+        // Handle Patient Submission
+        function handlePatientSubmit(e) {
             e.preventDefault();
-            if (!selectedLabOrderId) return;
+            const newPat = {
+                id: "PAT-" + Math.floor(100 + Math.random() * 900),
+                name: document.getElementById("pName").value,
+                age: document.getElementById("pAge").value,
+                gender: document.getElementById("pGender").value,
+                phone: document.getElementById("pPhone").value,
+                symptoms: document.getElementById("pSymptoms").value,
+                status: "Pending Consult",
+                labTest: "None",
+                labResult: "N/A",
+                labStatus: "None"
+            };
 
-            const order = labQueue.find(l => l.orderId === selectedLabOrderId);
-            if (!order) return;
-
-            const results = document.getElementById('labResultsInput').value.trim();
-            const remarks = document.getElementById('labRemarksInput').value.trim();
-
-            order.results = results;
-            order.remarks = remarks;
-            order.status = 'COMPLETED';
-
-            document.getElementById('labProcessingForm').reset();
-            document.getElementById('labProcessingForm').classList.add('hidden');
-            document.getElementById('noLabSelected').classList.remove('hidden');
-            selectedLabOrderId = null;
-
-            renderLabQueue();
-            updateKPIs();
-            showToast(`Lab results saved! Synced with Consultant & Admin.`, 'success');
+            patients.push(newPat);
+            document.getElementById("patientForm").reset();
+            renderAll();
+            showAlert(`Patient ${newPat.name} successfully registered into Nevada Clinic system!`, "success");
         }
 
-        function renderInventoryTable() {
-            const tbody = document.getElementById('adminInventoryTable');
-            tbody.innerHTML = inventory.map(item => `
+        // Nurse View Rendering
+        function renderNurseView() {
+            // Populate Nurse Lab Patient Dropdown
+            const select = document.getElementById("nurseLabPatient");
+            select.innerHTML = patients.map(p => `<option value="${p.id}">${p.name} (${p.id})</option>`).join('');
+
+            // Render Nurse Lab Results Table
+            const resultsBody = document.getElementById("nurseLabResultsBody");
+            resultsBody.innerHTML = labQueue.map(l => `
                 <tr class="hover:bg-slate-50">
-                    <td class="p-2.5 font-bold text-slate-800">${item.name}</td>
-                    <td class="p-2.5 text-slate-500">${item.category}</td>
-                    <td class="p-2.5 text-center">
-                        <span class="px-2 py-0.5 rounded-full font-bold text-[11px] ${item.stock === 0 ? 'bg-red-100 text-red-700' : item.stock <= 10 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">
-                            ${item.stock} units
-                        </span>
+                    <td class="py-2.5 px-3 font-medium text-slate-800">${l.patientName}</td>
+                    <td class="py-2.5 px-3 text-slate-600 text-xs">${l.testType}</td>
+                    <td class="py-2.5 px-3 font-semibold ${l.status === 'Completed' ? 'text-blue-700' : 'text-slate-400'}">${l.result || 'Pending'}</td>
+                    <td class="py-2.5 px-3">
+                        <span class="px-2 py-0.5 text-xs rounded-full ${l.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${l.status}</span>
                     </td>
-                    <td class="p-2.5 font-semibold text-teal-700">KES ${item.price}</td>
-                    <td class="p-2.5 text-slate-500 italic">${item.alt}</td>
-                    <td class="p-2.5 text-right">
-                        <button onclick="restockItem('${item.id}')" class="bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-[11px] font-semibold px-2 py-1 rounded-md">
-                            <i class="fa-solid fa-plus-circle mr-1"></i> +20 Restock
+                </tr>
+            `).join('');
+
+            // Render Nurse Medicine Inventory & Cost View
+            const medBody = document.getElementById("nurseMedTableBody");
+            medBody.innerHTML = medicines.map(m => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-semibold text-slate-800">${m.name}</td>
+                    <td class="py-3 px-4 text-xs text-slate-500">${m.category}</td>
+                    <td class="py-3 px-4"><span class="font-bold ${m.stock < 100 ? 'text-amber-600' : 'text-slate-700'}">${m.stock} units</span></td>
+                    <td class="py-3 px-4 text-slate-600 font-mono">KES ${m.costPrice.toLocaleString()}</td>
+                    <td class="py-3 px-4 font-semibold text-emerald-700 font-mono">KES ${m.sellingPrice.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Nurse Submit Patient for Lab Test
+        function handleNurseLabSubmit(e) {
+            e.preventDefault();
+            const patientId = document.getElementById("nurseLabPatient").value;
+            const patient = patients.find(p => p.id === patientId);
+            const testType = document.getElementById("nurseLabTestType").value;
+            const notes = document.getElementById("nurseLabNotes").value;
+
+            const labItem = {
+                id: "LAB-" + Math.floor(500 + Math.random() * 500),
+                patientId: patientId,
+                patientName: patient ? patient.name : "Unknown",
+                testType: testType,
+                notes: notes,
+                result: "Pending",
+                status: "In Progress"
+            };
+
+            labQueue.push(labItem);
+            if (patient) {
+                patient.labTest = testType;
+                patient.labStatus = "In Progress";
+            }
+
+            document.getElementById("nurseLabNotes").value = "";
+            renderAll();
+            showAlert(`Lab test request for ${patient ? patient.name : 'Patient'} submitted to Laboratory Queue!`, "success");
+        }
+
+        // Consult View Rendering
+        function renderConsultView() {
+            const pSelect = document.getElementById("consultPatientSelect");
+            pSelect.innerHTML = patients.map(p => `<option value="${p.id}">${p.name} - ${p.status}</option>`).join('');
+
+            const mSelect = document.getElementById("consultMedSelect");
+            mSelect.innerHTML = medicines.map(m => `<option value="${m.id}">${m.name} (In Stock: ${m.stock}) - KES ${m.sellingPrice}</option>`).join('');
+
+            loadConsultationData();
+        }
+
+        function loadConsultationData() {
+            const pId = document.getElementById("consultPatientSelect").value;
+            const patient = patients.find(p => p.id === pId);
+            const card = document.getElementById("patientDetailsCard");
+
+            if (patient) {
+                card.classList.remove("hidden");
+                document.getElementById("cardName").textContent = patient.name + " (" + patient.id + ")";
+                document.getElementById("cardAge").textContent = patient.age;
+                document.getElementById("cardGender").textContent = patient.gender;
+                document.getElementById("cardSymptoms").textContent = patient.symptoms + " | Lab Test: " + (patient.labTest || "None") + " (" + (patient.labResult || "No result") + ")";
+            } else {
+                card.classList.add("hidden");
+            }
+        }
+
+        function saveConsultation() {
+            const pId = document.getElementById("consultPatientSelect").value;
+            const mId = document.getElementById("consultMedSelect").value;
+            const qty = parseInt(document.getElementById("consultMedQty").value) || 1;
+            const diag = document.getElementById("consultDiagnosis").value;
+
+            const patient = patients.find(p => p.id === pId);
+            const med = medicines.find(m => m.id === mId);
+
+            if (patient && med) {
+                if (med.stock < qty) {
+                    showAlert(`Insufficient stock for ${med.name}. Available: ${med.stock}`, "warning");
+                    return;
+                }
+
+                med.stock -= qty;
+                patient.status = "Completed";
+                revenue += (med.sellingPrice * qty);
+
+                document.getElementById("consultDiagnosis").value = "";
+                renderAll();
+                showAlert(`Consultation finalized and prescription recorded for ${patient.name}.`, "success");
+            }
+        }
+
+        // Render Laboratory Workbench
+        function renderLabQueue() {
+            const tbody = document.getElementById("labQueueTableBody");
+            tbody.innerHTML = labQueue.map(l => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-semibold text-slate-900">${l.patientName} <span class="text-xs font-mono text-slate-400 block">${l.patientId}</span></td>
+                    <td class="py-3 px-4 text-slate-700 font-medium">${l.testType}</td>
+                    <td class="py-3 px-4 text-slate-500 text-xs">Nurse Station</td>
+                    <td class="py-3 px-4 text-slate-600 text-xs italic">${l.notes || 'None'}</td>
+                    <td class="py-3 px-4 font-semibold ${l.status === 'Completed' ? 'text-emerald-600' : 'text-amber-600'}">${l.result}</td>
+                    <td class="py-3 px-4 text-right">
+                        ${l.status !== 'Completed' ? `
+                            <button onclick="recordLabResult('${l.id}')" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm">
+                                Record Result
+                            </button>
+                        ` : `
+                            <span class="text-xs text-slate-400">Completed</span>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function recordLabResult(labId) {
+            const res = prompt("Enter Laboratory Test Result Findings:");
+            if (res && res.trim() !== "") {
+                const labItem = labQueue.find(l => l.id === labId);
+                if (labItem) {
+                    labItem.result = res;
+                    labItem.status = "Completed";
+
+                    const patient = patients.find(p => p.id === labItem.patientId);
+                    if (patient) {
+                        patient.labResult = res;
+                        patient.labStatus = "Completed";
+                    }
+
+                    renderAll();
+                    showAlert(`Lab result updated for ${labItem.patientName}!`, "success");
+                }
+            }
+        }
+
+        // Render Pharmacy Inventory
+        function renderPharmacyStock() {
+            const tbody = document.getElementById("pharmacyStockTableBody");
+            tbody.innerHTML = medicines.map(m => {
+                const margin = m.sellingPrice - m.costPrice;
+                return `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-mono text-xs text-slate-500">${m.id}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-900">${m.name}</td>
+                    <td class="py-3 px-4 text-xs text-slate-600">${m.category}</td>
+                    <td class="py-3 px-4 font-bold text-slate-800">${m.stock} units</td>
+                    <td class="py-3 px-4 font-mono text-slate-600">KES ${m.costPrice.toLocaleString()}</td>
+                    <td class="py-3 px-4 font-mono text-emerald-700 font-semibold">KES ${m.sellingPrice.toLocaleString()}</td>
+                    <td class="py-3 px-4 font-mono text-xs text-slate-500">+KES ${margin.toLocaleString()}</td>
+                </tr>
+            `}).join('');
+        }
+
+        // Admin View Rendering
+        function renderAdminView() {
+            // Staff Directory Table
+            const staffBody = document.getElementById("staffDirectoryBody");
+            staffBody.innerHTML = staffDirectory.map(s => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-2 px-3 font-medium text-slate-900">${s.name} <span class="block text-xs text-slate-400">${s.email}</span></td>
+                    <td class="py-2 px-3 text-xs font-semibold text-slate-700">${s.role}</td>
+                    <td class="py-2 px-3"><span class="px-2 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-700 font-medium">${s.status}</span></td>
+                </tr>
+            `).join('');
+
+            // Admin Price Adjustment Table
+            const priceBody = document.getElementById("adminPriceAdjustBody");
+            priceBody.innerHTML = medicines.map(m => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-2 px-3 font-medium text-slate-900">${m.name}</td>
+                    <td class="py-2 px-3">
+                        <input type="number" id="cost-${m.id}" value="${m.costPrice}" class="w-20 px-2 py-1 text-xs border border-slate-300 rounded font-mono">
+                    </td>
+                    <td class="py-2 px-3">
+                        <input type="number" id="price-${m.id}" value="${m.sellingPrice}" class="w-20 px-2 py-1 text-xs border border-slate-300 rounded font-mono">
+                    </td>
+                    <td class="py-2 px-3 text-right">
+                        <button onclick="saveMedicinePrice('${m.id}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2.5 py-1 rounded shadow-sm">
+                            Save
                         </button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function restockItem(drugId) {
-            const item = inventory.find(i => i.id === drugId);
-            if (item) {
-                item.stock += 20;
-                renderInventoryTable();
-                populatePrescDrugDropdown();
-                updateKPIs();
-                showToast(`Restocked +20 units of ${item.name}`, 'success');
-            }
-        }
-
-        function openAddNewDrugModal() {
-            document.getElementById('addDrugModal').classList.remove('hidden');
-        }
-
-        function closeAddNewDrugModal() {
-            document.getElementById('addDrugModal').classList.add('hidden');
-        }
-
-        function handleAddNewDrug(e) {
+        // Admin Register Staff
+        function handleStaffRegister(e) {
             e.preventDefault();
-            const name = document.getElementById('newDrugName').value.trim();
-            const cat = document.getElementById('newDrugCategory').value.trim() || 'General';
-            const stock = parseInt(document.getElementById('newDrugStock').value) || 0;
-            const price = parseFloat(document.getElementById('newDrugPrice').value) || 0;
-            const alt = document.getElementById('newDrugAlt').value.trim() || 'Standard Substitute';
+            const name = document.getElementById("staffName").value;
+            const email = document.getElementById("staffEmail").value;
+            const role = document.getElementById("staffRole").value;
 
-            inventory.push({
-                id: `MED-${inventory.length + 1}`,
+            const newStaff = {
+                id: staffDirectory.length + 1,
                 name: name,
-                category: cat,
-                stock: stock,
-                price: price,
-                alt: alt
-            });
+                email: email,
+                role: role,
+                status: "Active"
+            };
 
-            closeAddNewDrugModal();
-            renderInventoryTable();
-            populatePrescDrugDropdown();
-            updateKPIs();
-            showToast(`Added ${name} to Pharmacy Master!`, 'success');
+            staffDirectory.push(newStaff);
+            document.getElementById("staffRegisterForm").reset();
+            renderAll();
+            showAlert(`Staff member ${name} registered under role ${role}!`, "success");
         }
 
-        function renderAdminHistory() {
-            const query = document.getElementById('adminMedicalSearch').value.toLowerCase();
-            const tbody = document.getElementById('adminHistoryTableBody');
+        // Admin Adjust Medicine Cost/Selling Price
+        function saveMedicinePrice(medId) {
+            const costInput = document.getElementById(`cost-${medId}`);
+            const priceInput = document.getElementById(`price-${medId}`);
 
-            const filteredVisits = visits.filter(v => 
-                v.patientName.toLowerCase().includes(query) || 
-                v.patientPhone.includes(query)
-            );
+            const newCost = parseFloat(costInput.value);
+            const newPrice = parseFloat(priceInput.value);
 
-            if (filteredVisits.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No medical history records matching search.</td></tr>`;
-                return;
+            const med = medicines.find(m => m.id === medId);
+            if (med) {
+                med.costPrice = newCost;
+                med.sellingPrice = newPrice;
+                renderAll();
+                showAlert(`Updated unit prices for ${med.name}: Cost KES ${newCost}, Price KES ${newPrice}`, "success");
             }
-
-            tbody.innerHTML = filteredVisits.map(v => `
-                <tr class="hover:bg-slate-50 border-b border-slate-100">
-                    <td class="p-3">
-                        <strong class="text-teal-700 block">${v.visitId}</strong>
-                        <span class="text-[10px] text-slate-400">${v.date}</span>
-                    </td>
-                    <td class="p-3 font-medium text-slate-800">${v.patientName}</td>
-                    <td class="p-3 text-[11px]">
-                        ${v.vitals ? `BP: ${v.vitals.bp} | T: ${v.vitals.temp}°C | W: ${v.vitals.weight}kg` : '<span class="text-slate-400">Not Logged</span>'}
-                    </td>
-                    <td class="p-3 font-medium text-slate-700 max-w-xs">${v.diagnosis || '<span class="text-slate-400 italic">In Progress</span>'}</td>
-                    <td class="p-3">
-                        ${v.prescriptions.length > 0 ? v.prescriptions.map(p => `<span class="inline-block bg-teal-50 text-teal-800 text-[10px] px-1.5 py-0.5 rounded border border-teal-200 mr-1 mb-1">${p.drugName} (x${p.qty})</span>`).join('') : '<span class="text-slate-400">None</span>'}
-                    </td>
-                    <td class="p-3 text-[11px]">
-                        ${v.labOrders.length > 0 ? v.labOrders.map(l => `<div class="text-[10px]"><strong>${l.testName}:</strong> ${l.results || 'Pending'}</div>`).join('') : '<span class="text-slate-400">No Lab</span>'}
-                    </td>
-                </tr>
-            `).join('');
         }
 
-        function updateKPIs() {
-            // Calculated Metrics
-            const totalPatients = patients.length;
-            const totalVisits = visits.length;
-            const stockCount = inventory.reduce((acc, item) => acc + item.stock, 0);
-            const pendingLabs = labQueue.filter(l => l.status === 'PENDING').length;
+        // Financial Overview Calculation
+        function updateFinancialStats() {
+            const totalVal = medicines.reduce((acc, m) => acc + (m.stock * m.sellingPrice), 0);
 
-            let grossRevenue = 0;
-            visits.forEach(v => {
-                v.prescriptions.forEach(p => {
-                    grossRevenue += p.totalCost;
-                });
-            });
-
-            const estimatedExpenses = grossRevenue * 0.4; // 40% stock acquisition cost
-            const netProfit = grossRevenue - estimatedExpenses;
-
-            // Update UI Counters
-            document.getElementById('kpiTotalPatients').innerText = totalPatients;
-            document.getElementById('kpiTotalVisits').innerText = totalVisits;
-            document.getElementById('kpiStockCount').innerText = `${stockCount} units`;
-            document.getElementById('kpiPendingLab').innerText = pendingLabs;
-            document.getElementById('kpiNetRevenue').innerText = `KES ${grossRevenue.toLocaleString()}`;
-
-            document.getElementById('adminGrossRevenue').innerText = `KES ${grossRevenue.toLocaleString()}`;
-            document.getElementById('adminExpenses').innerText = `KES ${estimatedExpenses.toLocaleString()}`;
-            document.getElementById('adminNetProfit').innerText = `KES ${netProfit.toLocaleString()}`;
-
-            updateFinancialChart(grossRevenue, estimatedExpenses, netProfit);
+            document.getElementById("statRevenue").textContent = "KES " + revenue.toLocaleString();
+            document.getElementById("statInventoryValue").textContent = "KES " + totalVal.toLocaleString();
+            document.getElementById("statPatientCount").textContent = patients.length;
+            document.getElementById("statStaffCount").textContent = staffDirectory.length;
         }
 
-        function initFinancialChart() {
-            const ctx = document.getElementById('financialChart').getContext('2d');
-            financialChartInstance = new Chart(ctx, {
-                type: 'doughnut',
+        // Chart.js Visualizations
+        function initCharts() {
+            const ctxStock = document.getElementById("stockChart").getContext("2d");
+            stockChartInstance = new Chart(ctxStock, {
+                type: 'bar',
                 data: {
-                    labels: ['Net Profit', 'Operating Costs'],
+                    labels: medicines.map(m => m.name),
                     datasets: [{
-                        data: [0, 0],
-                        backgroundColor: ['#10b981', '#f43f5e'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
+                        label: 'Stock Quantity',
+                        data: medicines.map(m => m.stock),
+                        backgroundColor: '#3b82f6'
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctxRole = document.getElementById("roleChart").getContext("2d");
+            roleChartInstance = new Chart(ctxRole, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Admin', 'Nurse', 'Consultant', 'Lab Tech', 'Registration Staff'],
+                    datasets: [{
+                        data: [1, 1, 1, 1, 1],
+                        backgroundColor: ['#1e293b', '#2563eb', '#059669', '#9333ea', '#d97706']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        function updateFinancialChart(gross, expenses, net) {
-            if (financialChartInstance) {
-                financialChartInstance.data.datasets[0].data = [net, expenses];
-                financialChartInstance.update();
+        function updateCharts() {
+            if (stockChartInstance) {
+                stockChartInstance.data.labels = medicines.map(m => m.name);
+                stockChartInstance.data.datasets[0].data = medicines.map(m => m.stock);
+                stockChartInstance.update();
             }
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-
-            const bgColors = {
-                'success': 'bg-emerald-800 text-white border-emerald-600',
-                'error': 'bg-red-800 text-white border-red-600',
-                'warning': 'bg-amber-800 text-white border-amber-600',
-                'info': 'bg-slate-800 text-white border-slate-700'
-            };
-
-            const icons = {
-                'success': 'fa-circle-check text-emerald-400',
-                'error': 'fa-circle-xmark text-red-400',
-                'warning': 'fa-triangle-exclamation text-amber-400',
-                'info': 'fa-circle-info text-blue-400'
-            };
-
-            toast.className = `p-3 rounded-lg shadow-lg border text-xs font-medium flex items-center justify-between gap-3 pointer-events-auto transform transition duration-300 ease-in-out ${bgColors[type] || bgColors.info}`;
-            toast.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid ${icons[type] || icons.info}"></i>
-                    <span>${message}</span>
-                </div>
-                <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            `;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
         }
     </script>
 </body>

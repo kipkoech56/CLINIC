@@ -1,9 +1,8 @@
-```html
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" #0284c7">
-<meta name="theme-color" #0284c7">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nevada Clinic v2.5 - Medical Management Portal</title>
@@ -43,7 +42,6 @@
             background: rgba(17, 24, 39, 0.85);
             backdrop-filter: blur(12px);
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
@@ -51,6 +49,48 @@
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- LOGIN MODAL OVERLAY -->
+    <div id="loginModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-400 flex items-center justify-center text-white text-2xl shadow-lg mx-auto">
+                    <i class="fa-solid fa-hospital-user"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Nevada Clinic Portal</h2>
+                <p class="text-xs text-slate-500">Sign in with any email & password to access your staff portal</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="staff@nevadaclinic.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Assign System Role</label>
+                    <select id="loginRole" class="w-full px-3.5 py-2.5 rounded-xl border border-teal-500 dark:border-teal-600 bg-teal-50/50 dark:bg-slate-900 text-sm font-semibold text-teal-800 dark:text-teal-300 focus:ring-2 focus:ring-teal-500 outline-none">
+                        <option value="owner">Executive / Owner (Weldon Chepkwony) - Full Access</option>
+                        <option value="doctor">Doctor / Physician (Consultation & Lab Orders)</option>
+                        <option value="nurse">Nurse (Registration & Triage Vitals)</option>
+                        <option value="receptionist">Receptionist (Registration & Queue Management)</option>
+                        <option value="labtech">Lab Technologist (Lab Hub)</option>
+                        <option value="pharmacist">Pharmacist (Pharmacy Dispensing)</option>
+                        <option value="cashier">Cashier (Billing & Receipts)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-30 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
@@ -69,20 +109,13 @@
                     </div>
                 </div>
 
-                <!-- Action Controls (Theme, Active Module Badge, Notifications) -->
+                <!-- Action Controls -->
                 <div class="flex items-center space-x-3">
-                    <!-- Workflow Stage Indicator -->
-                    <div class="hidden md:flex items-center space-x-1 text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600">
-                        <span class="text-teal-600 dark:text-teal-400"><i class="fa-solid fa-arrows-spin mr-1"></i> Flow:</span>
-                        <span>Reg</span>
-                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                        <span>Triage</span>
-                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                        <span>Consult</span>
-                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                        <span>Lab</span>
-                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                        <span>Billing</span>
+                    <!-- Active Role Badge -->
+                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700/60 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600">
+                        <i class="fa-solid fa-user-gear text-teal-600 dark:text-teal-400 text-xs"></i>
+                        <span id="activeRoleDisplay" class="text-xs font-bold text-slate-700 dark:text-slate-200">Owner Access</span>
+                        <button onclick="logout()" class="text-[10px] text-red-500 hover:text-red-700 font-semibold underline ml-1">Switch Role</button>
                     </div>
 
                     <!-- Dark Mode Toggle -->
@@ -91,7 +124,7 @@
                     </button>
 
                     <!-- Quick Stats Badge -->
-                    <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl px-3 py-1.5 flex items-center gap-2">
+                    <div class="hidden sm:flex bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl px-3 py-1.5 items-center gap-2">
                         <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                         <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-300">System Online</span>
                     </div>
@@ -103,48 +136,36 @@
     <!-- Main Content Grid -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- Module Navigation Tabs -->
+        <!-- Role-Filtered Navigation Tabs -->
         <nav class="flex overflow-x-auto space-x-2 pb-2 border-b border-slate-200 dark:border-slate-700 scrollbar-none" aria-label="Modules">
-            <button onclick="switchTab('owner')" id="tab-owner" class="tab-btn active-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap bg-teal-600 text-white shadow-sm">
+            <button onclick="switchTab('owner')" id="tab-owner" class="tab-btn role-tab active-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap bg-teal-600 text-white shadow-sm">
                 <i class="fa-solid fa-user-shield mr-2"></i> Executive Leadership
             </button>
-            <button onclick="switchTab('registration')" id="tab-registration" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+            <button onclick="switchTab('registration')" id="tab-registration" class="tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
                 <i class="fa-solid fa-id-card mr-2"></i> 1. Registration
             </button>
-            <button onclick="switchTab('triage')" id="tab-triage" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+            <button onclick="switchTab('triage')" id="tab-triage" class="tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
                 <i class="fa-solid fa-heart-pulse mr-2"></i> 2. Triage & Vitals
             </button>
-            <button onclick="switchTab('consultation')" id="tab-consultation" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+            <button onclick="switchTab('consultation')" id="tab-consultation" class="tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
                 <i class="fa-solid fa-user-doctor mr-2"></i> 3. Consultation
             </button>
-            <button onclick="switchTab('lab')" id="tab-lab" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+            <button onclick="switchTab('lab')" id="tab-lab" class="tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
                 <i class="fa-solid fa-vials mr-2"></i> 4. Lab Hub
             </button>
-            <button onclick="switchTab('billing')" id="tab-billing" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
-                <i class="fa-solid fa-file-invoice-dollar mr-2"></i> 5. Billing & Receipts
+            <button onclick="switchTab('pharmacy')" id="tab-pharmacy" class="tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-pills mr-2 text-indigo-500"></i> 5. Pharmacy Dispense
             </button>
-         (<button onclick="switchTab('billing')...">) -->
-<button onclick="switchTab('pharmacy')" id="tab-pharmacy" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
-    <i class="fa-solid fa-pills mr-2 text-indigo-500"></i> Pharmacy Dispense
-<button onclick="switchTab('inventory')" id="tab-inventory" ...> ... </button>
-
-<!-- ADD YOUR NEW TAB HERE -->
-<button onclick="switchTab('pharmacy')" id="tab-pharmacy" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
-    <i class="fa-solid fa-pills mr-2 text-indigo-500"></i> Pharmacy Dispense
-</button>
-
-</nav> <!-- Line 129 -->
-
-</button>
-
-            <button onclick="switchTab('inventory')" id="tab-inventory" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+            <button onclick="switchTab('billing')" id="tab-billing" class="tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-file-invoice-dollar mr-2"></i> 6. Billing & Receipts
+            </button>
+            <button onclick="switchTab('inventory')" id="tab-inventory" class="tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
                 <i class="fa-solid fa-boxes-stacked mr-2"></i> Inventory & Pricing
             </button>
         </nav>
 
         <!-- MODULE: OWNER & EXECUTIVE LEADERSHIP -->
         <section id="module-owner" class="module-content space-y-6">
-            <!-- Owner Spotlight Card -->
             <div class="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-teal-500/20 relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 opacity-10 text-teal-300">
                     <i class="fa-solid fa-hospital-user text-9xl"></i>
@@ -184,54 +205,6 @@
                                 <span class="text-lg font-bold text-emerald-400">Active v2.5</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Key Roles Grid -->
-                <div class="mt-8 pt-6 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    <!-- Role 1 -->
-                    <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 hover:border-teal-500/50 transition-all">
-                        <div class="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center text-teal-400 mb-3">
-                            <i class="fa-solid fa-chess-king"></i>
-                        </div>
-                        <h3 class="text-sm font-semibold text-white mb-1">Strategic Leadership</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Directs clinic growth, policy formation, operational expansion, and patient care excellence.</p>
-                    </div>
-
-                    <!-- Role 2 -->
-                    <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 hover:border-teal-500/50 transition-all">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-3">
-                            <i class="fa-solid fa-chart-line-up font-bold"></i>
-                        </div>
-                        <h3 class="text-sm font-semibold text-white mb-1">Financial & Revenue</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Oversees all Ksh pricing structures, tariff adjustments, revenue protection, and billing integrity.</p>
-                    </div>
-
-                    <!-- Role 3 -->
-                    <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 hover:border-teal-500/50 transition-all">
-                        <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 mb-3">
-                            <i class="fa-solid fa-users-gear"></i>
-                        </div>
-                        <h3 class="text-sm font-semibold text-white mb-1">Staff Administration</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Manages clinical staff scheduling, doctor/nurse credentials, and department coordination.</p>
-                    </div>
-
-                    <!-- Role 4 -->
-                    <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 hover:border-teal-500/50 transition-all">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3">
-                            <i class="fa-solid fa-hospital-wide"></i>
-                        </div>
-                        <h3 class="text-sm font-semibold text-white mb-1">Clinic Oversight</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Ensures strict medical standards, regulatory compliance, and seamless patient care pathways.</p>
-                    </div>
-
-                    <!-- Role 5 -->
-                    <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 hover:border-teal-500/50 transition-all">
-                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 mb-3">
-                            <i class="fa-solid fa-tags"></i>
-                        </div>
-                        <h3 class="text-sm font-semibold text-white mb-1">Price & Inventory Governance</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Sole authority over lab test Ksh pricing, pharmacy drug tariffs, and inventory restock approvals.</p>
                     </div>
                 </div>
             </div>
@@ -276,7 +249,6 @@
         <!-- MODULE 1: REGISTRATION -->
         <section id="module-registration" class="module-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Registration Form -->
                 <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-user-plus text-teal-600"></i> New Patient Intake
@@ -321,7 +293,6 @@
                     </form>
                 </div>
 
-                <!-- Registered Patients List -->
                 <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -361,7 +332,6 @@
                         <p class="text-xs text-slate-500">Record patient vital signs before physician consultation</p>
                     </div>
 
-                    <!-- Patient Selector dropdown -->
                     <div class="w-full sm:w-72">
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Select Active Patient:</label>
                         <select id="triagePatientSelect" onchange="loadTriagePatientData()" class="w-full px-3 py-2 rounded-xl border border-teal-500 dark:border-teal-600 bg-teal-50/50 dark:bg-slate-900 text-sm font-semibold focus:ring-2 focus:ring-teal-500">
@@ -378,11 +348,6 @@
 
                     <div>
                         <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Temperature (°C)</label>
-            
-<!-- ADD NEW MODULE SECTION HERE -->
-<section id="module-pharmacy" class="module-content hidden space-y-6">
-  ...
-</section>
                         <input type="number" step="0.1" id="triageTemp" placeholder="36.8" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm outline-none focus:ring-2 focus:ring-teal-500">
                     </div>
 
@@ -443,7 +408,6 @@
                     </div>
                 </div>
 
-                <!-- Triage Summary Card for Doctor -->
                 <div id="doctorTriageSummary" class="mb-6 p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 text-xs grid grid-cols-2 sm:grid-cols-5 gap-3">
                     <div><span class="text-slate-400 block">BP:</span> <strong id="docBP" class="text-slate-700 dark:text-slate-200">-</strong></div>
                     <div><span class="text-slate-400 block">Temp:</span> <strong id="docTemp" class="text-slate-700 dark:text-slate-200">-</strong></div>
@@ -458,7 +422,6 @@
                         <textarea id="consultDiagnosis" rows="2" required placeholder="Acute Malaria suspected with mild dehydration..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                     </div>
 
-                    <!-- Lab Test Picker with Ksh Pricing -->
                     <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/30">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
@@ -471,7 +434,6 @@
                         </div>
                     </div>
 
-                    <!-- Prescription Selector -->
                     <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/30">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
@@ -488,7 +450,7 @@
 
                     <div class="flex justify-end">
                         <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-share-from-square"></i> Complete Doctor Visit & Transfer to Lab/Billing
+                            <i class="fa-solid fa-share-from-square"></i> Complete Doctor Visit & Advance Patient
                         </button>
                     </div>
                 </form>
@@ -515,26 +477,39 @@
                 </div>
 
                 <div id="labTestsContainer" class="space-y-4">
-                    <!-- Dynamic test entry forms per patient -->
                     <p class="text-slate-400 text-sm italic">Select a patient above with pending lab requests.</p>
                 </div>
             </div>
         </section>
 
-        <!-- MODULE 5: BILLING & RECEIPTS -->
-     <!-- ADD INSIDE MODULE BILLING (BEFORE ACTION BUTTONS) -->
-<div class="mb-4 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
-    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Select Payment Channel:</label>
-    <select id="billingPayMethod" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
-        <option value="M-Pesa (Till/Paybill)">📱 M-Pesa (Till / Paybill)</option>
-        <option value="Cash">💵 Cash Payment</option>
-        <option value="NHIF / Insurance Claim">🏥 Insurance / SHA Claim</option>
-        <option value="Card (POS)">💳 Credit / Debit Card</option>
-    </select>
-</div>
-       <section id="module-billing" class="module-content hidden space-y-6">
+        <!-- MODULE 5: PHARMACY DISPENSING DESK -->
+        <section id="module-pharmacy" class="module-content hidden space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-prescription-bottle-medical text-indigo-600"></i> Pharmacist Dispensing Desk
+                        </h3>
+                        <p class="text-xs text-slate-500">Verify Doctor Prescriptions, Enter Dosage Instructions, & Dispense Stock</p>
+                    </div>
+
+                    <div class="w-full sm:w-72">
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Select Pharmacy Patient:</label>
+                        <select id="pharmacyPatientSelect" onchange="loadPharmacyPatientData()" class="w-full px-3 py-2 rounded-xl border border-indigo-500 dark:border-indigo-600 bg-indigo-50/50 dark:bg-slate-900 text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
+                            <!-- Dynamic options -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="pharmacyPrescriptionsContainer" class="space-y-4">
+                    <p class="text-slate-400 text-sm italic">Select a patient above to view prescribed medications.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 6: BILLING & RECEIPTS -->
+        <section id="module-billing" class="module-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Patient Selector & Invoice Preview -->
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
                         <div class="flex justify-between items-center mb-4">
@@ -546,6 +521,17 @@
                                     <!-- Dynamic -->
                                 </select>
                             </div>
+                        </div>
+
+                        <!-- Payment Method Channel Selector -->
+                        <div class="mb-4 bg-slate-50 dark:bg-slate-900/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Select Payment Channel:</label>
+                            <select id="billingPayMethod" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
+                                <option value="M-Pesa (Till/Paybill)">📱 M-Pesa (Till / Paybill)</option>
+                                <option value="Cash">💵 Cash Payment</option>
+                                <option value="NHIF / Insurance Claim">🏥 Insurance / SHA Claim</option>
+                                <option value="Card (POS)">💳 Credit / Debit Card</option>
+                            </select>
                         </div>
 
                         <!-- Invoice Itemization Table -->
@@ -601,6 +587,7 @@
                             <div class="flex justify-between"><span>Receipt No:</span> <strong id="rcptNo" class="text-slate-900">NC-0000</strong></div>
                             <div class="flex justify-between"><span>Date/Time:</span> <span id="rcptDate">--/--/----</span></div>
                             <div class="flex justify-between"><span>Patient Name:</span> <strong id="rcptPatientName" class="text-slate-900">N/A</strong></div>
+                            <div class="flex justify-between"><span>Payment Channel:</span> <strong id="rcptPayMethod" class="text-slate-900">M-Pesa</strong></div>
                         </div>
 
                         <div class="border-t border-b border-slate-200 py-3 my-2 space-y-2">
@@ -622,10 +609,9 @@
             </div>
         </section>
 
-        <!-- MODULE: INVENTORY & PRICING (governed by Owner) -->
+        <!-- MODULE: INVENTORY & PRICING -->
         <section id="module-inventory" class="module-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Lab Tests Pricing Management -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -639,7 +625,6 @@
                     </div>
                 </div>
 
-                <!-- Drug Inventory & Price Governance -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -684,14 +669,36 @@
         </div>
     </div>
 
-    <!-- User Friendly Toast Alert Container -->
+    <!-- Toast Notification Container -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
+    <!-- APPLICATION SCRIPT LOGIC -->
     <script>
-        // Global State
-        const CONSULTATION_FEE_KSH = 300;
+        // Global State & Configuration
+        const CONSULTATION_FEE_KSH = 1500;
+        let currentUserRole = 'owner';
 
-        // Dynamic Data Tables
+        // Role Permission Matrix (Defines which modules each role can access)
+        const ROLE_PERMISSIONS = {
+            owner: ['owner', 'registration', 'triage', 'consultation', 'lab', 'pharmacy', 'billing', 'inventory'],
+            doctor: ['consultation', 'lab', 'triage'],
+            nurse: ['registration', 'triage'],
+            receptionist: ['registration'],
+            labtech: ['lab'],
+            pharmacist: ['pharmacy', 'inventory'],
+            cashier: ['billing']
+        };
+
+        const ROLE_LABELS = {
+            owner: 'Executive / Owner',
+            doctor: 'Doctor / Physician',
+            nurse: 'Nurse',
+            receptionist: 'Receptionist',
+            labtech: 'Lab Technologist',
+            pharmacist: 'Pharmacist',
+            cashier: 'Cashier'
+        };
+
         let labTests = [
             { id: 'l1', name: 'Full Blood Count (FBC)', price: 800 },
             { id: 'l2', name: 'Malaria Antigen BS/MP', price: 500 },
@@ -736,7 +743,43 @@
             updateDashboardStats();
         };
 
-        // Dark Mode Logic
+        // Authentication & Role Handling
+        function handleLogin(e) {
+            e.preventDefault();
+            const role = document.getElementById('loginRole').value;
+            currentUserRole = role;
+
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('activeRoleDisplay').textContent = ROLE_LABELS[role];
+
+            applyRolePermissions();
+            showToast(`Logged in successfully as ${ROLE_LABELS[role]}`);
+        }
+
+        function logout() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function applyRolePermissions() {
+            const allowedTabs = ROLE_PERMISSIONS[currentUserRole] || [];
+
+            // Hide or Show Nav Tab Buttons based on Role Permissions
+            document.querySelectorAll('.role-tab').forEach(btn => {
+                const tabId = btn.id.replace('tab-', '');
+                if (allowedTabs.includes(tabId)) {
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+
+            // Switch to the first allowed tab automatically
+            if (allowedTabs.length > 0) {
+                switchTab(allowedTabs[0]);
+            }
+        }
+
+        // Dark Mode Toggle
         function toggleDarkMode() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
@@ -749,11 +792,11 @@
             }
         }
 
-        // Tab Switcher
+        // Tab Navigation
         function switchTab(tabId) {
             document.querySelectorAll('.module-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800";
+                btn.className = "tab-btn role-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800";
             });
 
             const selectedModule = document.getElementById(`module-${tabId}`);
@@ -761,7 +804,7 @@
 
             const activeTabBtn = document.getElementById(`tab-${tabId}`);
             if (activeTabBtn) {
-                activeTabBtn.className = "tab-btn active-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap bg-teal-600 text-white shadow-sm";
+                activeTabBtn.className = "tab-btn role-tab active-tab inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap bg-teal-600 text-white shadow-sm";
             }
         }
 
@@ -830,6 +873,7 @@
                 if (pt.status === 'Triage Waiting') statusBadge = 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
                 if (pt.status === 'Consultation') statusBadge = 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300';
                 if (pt.status === 'Lab Pending') statusBadge = 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300';
+                if (pt.status === 'Pharmacy Pending') statusBadge = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300';
                 if (pt.status === 'Billing Ready') statusBadge = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
 
                 const tr = document.createElement('tr');
@@ -855,7 +899,7 @@
         }
 
         function populatePatientDropdowns() {
-            const dropdowns = ['triagePatientSelect', 'consultPatientSelect', 'labPatientSelect', 'billingPatientSelect'];
+            const dropdowns = ['triagePatientSelect', 'consultPatientSelect', 'labPatientSelect', 'pharmacyPatientSelect', 'billingPatientSelect'];
             
             dropdowns.forEach(id => {
                 const el = document.getElementById(id);
@@ -890,6 +934,10 @@
                 switchTab('lab');
                 document.getElementById('labPatientSelect').value = id;
                 loadLabPatientData();
+            } else if (pt.status === 'Pharmacy Pending') {
+                switchTab('pharmacy');
+                document.getElementById('pharmacyPatientSelect').value = id;
+                loadPharmacyPatientData();
             } else {
                 switchTab('billing');
                 document.getElementById('billingPatientSelect').value = id;
@@ -982,7 +1030,6 @@
 
             document.getElementById('consultDiagnosis').value = pt.consultation.diagnosis || '';
 
-            // Check checkboxes
             document.querySelectorAll('input[name="labTestOpt"]').forEach(chk => {
                 chk.checked = (pt.consultation.orderedTests || []).includes(chk.value);
             });
@@ -1007,25 +1054,30 @@
             pt.consultation.orderedTests = selectedLabs;
             pt.consultation.prescribedDrugs = selectedDrugs;
 
-            // Initialize pending lab results
             selectedLabs.forEach(testId => {
                 if (!pt.labResults[testId]) pt.labResults[testId] = 'Pending Results';
             });
 
             if (selectedLabs.length > 0) {
                 pt.status = 'Lab Pending';
+            } else if (selectedDrugs.length > 0) {
+                pt.status = 'Pharmacy Pending';
             } else {
                 pt.status = 'Billing Ready';
             }
 
             renderPatientsTable();
             populatePatientDropdowns();
-            showToast(`Consultation saved for ${pt.name}. Order routed successfully.`);
+            showToast(`Consultation saved for ${pt.name}. Workflow advanced.`);
 
             if (selectedLabs.length > 0) {
                 switchTab('lab');
                 document.getElementById('labPatientSelect').value = pt.id;
                 loadLabPatientData();
+            } else if (selectedDrugs.length > 0) {
+                switchTab('pharmacy');
+                document.getElementById('pharmacyPatientSelect').value = pt.id;
+                loadPharmacyPatientData();
             } else {
                 switchTab('billing');
                 document.getElementById('billingPatientSelect').value = pt.id;
@@ -1074,15 +1126,73 @@
             const val = document.getElementById(`labResult_${testId}`).value.trim();
             pt.labResults[testId] = val || 'Completed (Negative/Normal)';
 
-            // Check if all lab tests are done
             const allDone = pt.consultation.orderedTests.every(tid => pt.labResults[tid] && pt.labResults[tid] !== 'Pending Results');
             if (allDone) {
-                pt.status = 'Billing Ready';
+                if (pt.consultation.prescribedDrugs && pt.consultation.prescribedDrugs.length > 0) {
+                    pt.status = 'Pharmacy Pending';
+                } else {
+                    pt.status = 'Billing Ready';
+                }
             }
 
             renderPatientsTable();
             populatePatientDropdowns();
             showToast('Lab result stored successfully in patient EMR.');
+        }
+
+        // PHARMACY DISPENSING MODULE LOGIC
+        function loadPharmacyPatientData() {
+            const id = document.getElementById('pharmacyPatientSelect').value;
+            const pt = patients.find(p => p.id === id);
+            const container = document.getElementById('pharmacyPrescriptionsContainer');
+            container.innerHTML = '';
+
+            if (!pt || !pt.consultation.prescribedDrugs || pt.consultation.prescribedDrugs.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm italic">No medications prescribed for this patient.</p>';
+                return;
+            }
+
+            pt.consultation.prescribedDrugs.forEach(did => {
+                const drug = drugInventory.find(d => d.id === did);
+                if (!drug) return;
+
+                const card = document.createElement('div');
+                card.className = "p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4";
+                card.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-slate-900 dark:text-white text-sm">${drug.name}</h4>
+                        <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Available Stock: ${drug.stock} units | Price: Ksh ${drug.price.toLocaleString()}</span>
+                    </div>
+                    <div class="flex-1 max-w-md flex items-center gap-2">
+                        <input type="text" id="dosage_${did}" placeholder="Dosage e.g. 2 tabs x 3 daily for 5 days" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs outline-none">
+                        <button onclick="dispenseMedication('${pt.id}', '${did}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold whitespace-nowrap">
+                            <i class="fa-solid fa-hand-holding-medical mr-1"></i> Dispense
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function dispenseMedication(patientId, drugId) {
+            const pt = patients.find(p => p.id === patientId);
+            const drug = drugInventory.find(d => d.id === drugId);
+            if (drug) {
+                if (drug.stock <= 0) {
+                    showToast(`Out of stock for ${drug.name}!`, 'error');
+                    return;
+                }
+                drug.stock -= 1;
+                renderInventoryTariffs();
+
+                if (pt) {
+                    pt.status = 'Billing Ready';
+                    renderPatientsTable();
+                    populatePatientDropdowns();
+                }
+
+                showToast(`Dispensed ${drug.name}. Remaining stock: ${drug.stock}. Patient sent to Billing.`);
+            }
         }
 
         function loadBillingPatientData() {
@@ -1101,11 +1211,9 @@
             let subtotal = 0;
             let items = [];
 
-            // Consultation Fee
             subtotal += CONSULTATION_FEE_KSH;
             items.push({ desc: 'Doctor Consultation Fee', cat: 'Consultation', price: CONSULTATION_FEE_KSH });
 
-            // Lab Tests Fees
             (pt.consultation.orderedTests || []).forEach(tid => {
                 const t = labTests.find(x => x.id === tid);
                 if (t) {
@@ -1114,7 +1222,6 @@
                 }
             });
 
-            // Prescription Drug Fees
             (pt.consultation.prescribedDrugs || []).forEach(did => {
                 const d = drugInventory.find(x => x.id === did);
                 if (d) {
@@ -1123,7 +1230,6 @@
                 }
             });
 
-            // Render Table
             items.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -1134,13 +1240,15 @@
                 tbody.appendChild(tr);
             });
 
+            const payMethod = document.getElementById('billingPayMethod').value;
+
             document.getElementById('billSubtotal').textContent = `Ksh ${subtotal.toLocaleString()}`;
             document.getElementById('billGrandTotal').textContent = `Ksh ${subtotal.toLocaleString()}`;
 
-            // Update Live Printable Receipt Card Preview
             document.getElementById('rcptNo').textContent = `NC-${Math.floor(1000 + Math.random() * 9000)}`;
             document.getElementById('rcptDate').textContent = new Date().toLocaleString();
             document.getElementById('rcptPatientName').textContent = `${pt.name} (${pt.id})`;
+            document.getElementById('rcptPayMethod').textContent = payMethod;
             document.getElementById('rcptTotal').textContent = `Ksh ${subtotal.toLocaleString()}`;
 
             const rcptList = document.getElementById('rcptItemsList');
@@ -1180,7 +1288,7 @@
             updateDashboardStats();
             renderPatientsTable();
             populatePatientDropdowns();
-            showToast(`Payment of Ksh ${billTotal.toLocaleString()} successfully received for ${pt.name}!`);
+            showToast(`Payment of Ksh ${billTotal.toLocaleString()} received via ${document.getElementById('billingPayMethod').value}!`);
         }
 
         function printOfficialReceipt() {
@@ -1188,7 +1296,6 @@
         }
 
         function renderInventoryTariffs() {
-            // Render Lab Pricing List
             const labContainer = document.getElementById('labTariffList');
             labContainer.innerHTML = '';
             labTests.forEach(test => {
@@ -1203,7 +1310,6 @@
                 `;
             });
 
-            // Render Pharmacy Inventory List
             const drugContainer = document.getElementById('drugTariffList');
             drugContainer.innerHTML = '';
             drugInventory.forEach(drug => {
@@ -1227,7 +1333,7 @@
             if (test) {
                 test.price = parseFloat(newPrice) || 0;
                 renderLabTestPickers();
-                showToast(`Lab price for ${test.name} updated to Ksh ${test.price.toLocaleString()}`);
+                showToast(`Lab price updated to Ksh ${test.price.toLocaleString()}`);
             }
         }
 
@@ -1236,7 +1342,7 @@
             if (drug) {
                 drug.price = parseFloat(newPrice) || 0;
                 renderDrugPickers();
-                showToast(`Pharmacy price for ${drug.name} updated to Ksh ${drug.price.toLocaleString()}`);
+                showToast(`Pharmacy price updated to Ksh ${drug.price.toLocaleString()}`);
             }
         }
 
@@ -1270,65 +1376,3 @@
     </script>
 </body>
 </html>
-```
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker Registered!'))
-        .catch(err => console.log('Service Worker registration failed: ', err));
-    });
-  }
-</script>
-// 1. Update populatePatientDropdowns() array to include 'pharmacyPatientSelect'
-// Replace the dropdowns definition in populatePatientDropdowns with:
-// const dropdowns = ['triagePatientSelect', 'consultPatientSelect', 'labPatientSelect', 'billingPatientSelect', 'pharmacyPatientSelect'];
-
-// 2. Add Pharmacy Dispensing Handler Functions:
-function loadPharmacyPatientData() {
-    const id = document.getElementById('pharmacyPatientSelect').value;
-    const pt = patients.find(p => p.id === id);
-    const container = document.getElementById('pharmacyPrescriptionsContainer');
-    container.innerHTML = '';
-
-    if (!pt || !pt.consultation.prescribedDrugs || pt.consultation.prescribedDrugs.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-sm italic">No medications prescribed for this patient.</p>';
-        return;
-    }
-
-    pt.consultation.prescribedDrugs.forEach(did => {
-        const drug = drugInventory.find(d => d.id === did);
-        if (!drug) return;
-
-        const card = document.createElement('div');
-        card.className = "p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4";
-        card.innerHTML = `
-            <div>
-                <h4 class="font-bold text-slate-900 dark:text-white text-sm">${drug.name}</h4>
-                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Available Stock: ${drug.stock} units | Price: Ksh ${drug.price.toLocaleString()}</span>
-            </div>
-            <div class="flex-1 max-w-md flex items-center gap-2">
-                <input type="text" id="dosage_${did}" placeholder="Dosage e.g. 2 tabs x 3 daily for 5 days" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs outline-none">
-                <button onclick="dispenseMedication('${pt.id}', '${did}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold whitespace-nowrap">
-                    <i class="fa-solid fa-hand-holding-medical mr-1"></i> Dispense
-                </button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function dispenseMedication(patientId, drugId) {
-    const drug = drugInventory.find(d => d.id === drugId);
-    if (drug) {
-        if (drug.stock <= 0) {
-            showToast(`Out of stock for ${drug.name}!`, 'error');
-            return;
-        }
-        drug.stock -= 1; // Deduct inventory count
-        renderInventoryTariffs();
-        showToast(`Dispensed ${drug.name}. Stock updated to ${drug.stock}.`);
-    }
-}
-
-

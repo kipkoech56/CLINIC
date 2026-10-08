@@ -123,6 +123,11 @@
             <button onclick="switchTab('billing')" id="tab-billing" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
                 <i class="fa-solid fa-file-invoice-dollar mr-2"></i> 5. Billing & Receipts
             </button>
+         (<button onclick="switchTab('billing')...">) -->
+<button onclick="switchTab('pharmacy')" id="tab-pharmacy" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
+    <i class="fa-solid fa-pills mr-2 text-indigo-500"></i> Pharmacy Dispense
+</button>
+
             <button onclick="switchTab('inventory')" id="tab-inventory" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800">
                 <i class="fa-solid fa-boxes-stacked mr-2"></i> Inventory & Pricing
             </button>
@@ -503,7 +508,17 @@
         </section>
 
         <!-- MODULE 5: BILLING & RECEIPTS -->
-        <section id="module-billing" class="module-content hidden space-y-6">
+     <!-- ADD INSIDE MODULE BILLING (BEFORE ACTION BUTTONS) -->
+<div class="mb-4 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Select Payment Channel:</label>
+    <select id="billingPayMethod" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
+        <option value="M-Pesa (Till/Paybill)">📱 M-Pesa (Till / Paybill)</option>
+        <option value="Cash">💵 Cash Payment</option>
+        <option value="NHIF / Insurance Claim">🏥 Insurance / SHA Claim</option>
+        <option value="Card (POS)">💳 Credit / Debit Card</option>
+    </select>
+</div>
+       <section id="module-billing" class="module-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Patient Selector & Invoice Preview -->
                 <div class="lg:col-span-2 space-y-6">
@@ -660,7 +675,7 @@
 
     <script>
         // Global State
-        const CONSULTATION_FEE_KSH = 1500;
+        const CONSULTATION_FEE_KSH = 300;
 
         // Dynamic Data Tables
         let labTests = [
@@ -1251,5 +1266,55 @@
     });
   }
 </script>
+// 1. Update populatePatientDropdowns() array to include 'pharmacyPatientSelect'
+// Replace the dropdowns definition in populatePatientDropdowns with:
+// const dropdowns = ['triagePatientSelect', 'consultPatientSelect', 'labPatientSelect', 'billingPatientSelect', 'pharmacyPatientSelect'];
+
+// 2. Add Pharmacy Dispensing Handler Functions:
+function loadPharmacyPatientData() {
+    const id = document.getElementById('pharmacyPatientSelect').value;
+    const pt = patients.find(p => p.id === id);
+    const container = document.getElementById('pharmacyPrescriptionsContainer');
+    container.innerHTML = '';
+
+    if (!pt || !pt.consultation.prescribedDrugs || pt.consultation.prescribedDrugs.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-sm italic">No medications prescribed for this patient.</p>';
+        return;
+    }
+
+    pt.consultation.prescribedDrugs.forEach(did => {
+        const drug = drugInventory.find(d => d.id === did);
+        if (!drug) return;
+
+        const card = document.createElement('div');
+        card.className = "p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4";
+        card.innerHTML = `
+            <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-sm">${drug.name}</h4>
+                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Available Stock: ${drug.stock} units | Price: Ksh ${drug.price.toLocaleString()}</span>
+            </div>
+            <div class="flex-1 max-w-md flex items-center gap-2">
+                <input type="text" id="dosage_${did}" placeholder="Dosage e.g. 2 tabs x 3 daily for 5 days" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs outline-none">
+                <button onclick="dispenseMedication('${pt.id}', '${did}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold whitespace-nowrap">
+                    <i class="fa-solid fa-hand-holding-medical mr-1"></i> Dispense
+                </button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function dispenseMedication(patientId, drugId) {
+    const drug = drugInventory.find(d => d.id === drugId);
+    if (drug) {
+        if (drug.stock <= 0) {
+            showToast(`Out of stock for ${drug.name}!`, 'error');
+            return;
+        }
+        drug.stock -= 1; // Deduct inventory count
+        renderInventoryTariffs();
+        showToast(`Dispensed ${drug.name}. Stock updated to ${drug.stock}.`);
+    }
+}
 
 
